@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, TextAreaField
+from wtforms import StringField, PasswordField, TextAreaField, SelectField
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
 
@@ -45,3 +45,25 @@ class RegisterForm(Form):
         'Confirm Password',
         validators=[DataRequired()]
     )
+
+    crew = SelectField(
+        'Crew',
+        choices=[('red', 'Red'), ('blue', 'Blue')]
+    )
+
+
+class LoginForm(Form):
+    username = StringField(
+        'username',
+        validators=[
+            DataRequired()
+        ]
+    )
+
+    password = PasswordField(
+        'Password',
+        validators=[
+            DataRequired()
+        ])
+
+

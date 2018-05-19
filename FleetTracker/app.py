@@ -10,7 +10,7 @@ import models
 
 DEBUG = True
 PORT = 8080
-HOST = '172.31.98.152'
+HOST = '10.209.139.170'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
@@ -18,6 +18,7 @@ app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
 
 @login_manager.user_loader
 def load_user(userid):
@@ -42,14 +43,45 @@ def after_request(response):
     return response
 
 
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+
 @app.route('/register', methods=('GET', 'POST'))
 def register():
     form = forms.RegisterForm()
     if form.validate_on_submit():
         flash('Registration Success!', "success")
-        models.User.create_user(username=form.username.data, email=form.email.data, password=form.password.data)
+        models.User.create_user(username=form.username.data, email=form.email.data, password=form.password.data
+                                , crew=form.crew.value)
         return redirect(url_for('index'))
     return render_template('register.html', form=form)
+
+
+@app.route('/login', methods=('GET', 'POST'))
+def login():
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = models.User.get(models.User.username == form.username.data)
+        except models.DoesNotExist:
+            flash('Your username or password does not match', 'error')
+        if check_password_hash(user.password, form.password.data):
+            login_user(user)
+            flash("You've been logged in.", 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Your username or password is incorrect', 'error')
+        redirect(url_for('home'))
+    return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
@@ -59,7 +91,8 @@ if __name__ == '__main__':
             username='alester',
             email='austin.lester@ftsi.com',
             password='password',
-            admin=True
+            admin=True,
+            crew='red'
         )
     except ValueError:
         pass

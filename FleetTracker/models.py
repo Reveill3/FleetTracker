@@ -13,20 +13,23 @@ class User(UserMixin, Model):
     password = CharField(max_length=100)
     joined_at = DateTimeField(default=datetime.datetime.now)
     is_admin = BooleanField(default=False)
+    crew = CharField()
 
     class Meta:
         database = DATABASE
         order_by = ('-joined_at',)
 
     @classmethod
-    def create_user(cls, username, email, password, admin=False):
+    def create_user(cls, username, email, password, crew, admin=False):
         try:
             with DATABASE.transaction():
                 cls.create(
                     username=username,
                     email=email,
                     password=generate_password_hash(password),
-                    is_admin=admin)
+                    is_admin=admin,
+                    crew=crew
+                )
         except IntegrityError:
             raise ValueError("User already exists")
 
