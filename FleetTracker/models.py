@@ -34,7 +34,32 @@ class User(UserMixin, Model):
             raise ValueError("User already exists")
 
 
+class Equipment(Model):
+    unitnumber = CharField(unique=True)
+    type = CharField()
+    crew = CharField()
+    addedon = DateTimeField(default=datetime.datetime.now)
+
+    @classmethod
+    def add_equipment(cls, unitnumber, etype, crew):
+        try:
+            with DATABASE.transaction():
+                cls.create(
+                    unitnumber=unitnumber,
+                    type=etype,
+                    crew=crew
+                )
+        except IntegrityError:
+            raise IntegrityError('That Equipment already exists')
+
+    class Meta:
+        database = DATABASE
+        order_by = ('-addedon',)
+
+
+
+
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User], safe=True)
+    DATABASE.create_tables([User, Equipment], safe=True)
     DATABASE.close()

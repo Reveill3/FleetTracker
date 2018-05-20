@@ -2,8 +2,9 @@ from flask_wtf import Form
 from wtforms import StringField, PasswordField, TextAreaField, SelectField
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
+from wtforms import ValidationError
+from models import User, Equipment
 
-from models import User
 
 def name_exists(form, field):
     if User.select().where(User.username == field.data).exists():
@@ -13,6 +14,11 @@ def name_exists(form, field):
 def email_exists(form, field):
     if User.select().where(User.email == field.data).exists():
         raise ValidationError('User with that email already exists.')
+
+
+def equipment_exists(form, field):
+    if Equipment.select().where(Equipment.unitnumber == field.data).exists():
+        raise ValidationError('Equipment with that unit number already exists.')
 
 
 class RegisterForm(Form):
@@ -65,5 +71,28 @@ class LoginForm(Form):
         validators=[
             DataRequired()
         ])
+
+
+class AddForm(Form):
+    unitnumber = StringField(
+        'unitnumber',
+        validators=[
+            DataRequired(),
+            Regexp(
+                r'[0-9]{2}\w-[0-9]{5}',
+                message='input must be in this format: 53Q-11456'
+            ), equipment_exists
+        ]
+    )
+
+    type = SelectField('type',
+                       choices=[('pump', 'Pump'), ('blender', 'Blender')]
+                       )
+
+    crew = SelectField('crew',
+                       choices=[('red', 'Red'), ('blue', 'Blue')]
+                      )
+
+
 
 

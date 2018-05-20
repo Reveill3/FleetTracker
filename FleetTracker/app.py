@@ -54,7 +54,7 @@ def register():
     if form.validate_on_submit():
         flash('Registration Success!', "success")
         models.User.create_user(username=form.username.data, email=form.email.data, password=form.password.data
-                                , crew=form.crew.value)
+                                , crew=form.crew.data)
         return redirect(url_for('index'))
     return render_template('register.html', form=form)
 
@@ -84,6 +84,18 @@ def logout():
     return redirect(url_for('home'))
 
 
+@app.route('/add', methods=('GET', 'POST'))
+@login_required
+def add():
+    """validate add equipment form. renders add equipment page with form."""
+    form = forms.AddForm()
+    if form.validate_on_submit():
+        models.Equipment.add_equipment(unitnumber=form.unitnumber.data, etype=form.type.data, crew=form.crew.data)
+        flash('{} {} added.'.format(form.type.data, form.unitnumber.data))
+        redirect('home')
+    return render_template('add.html', form=form)
+
+
 if __name__ == '__main__':
     models.initialize()
     try:
@@ -97,3 +109,5 @@ if __name__ == '__main__':
     except ValueError:
         pass
     app.run(debug=DEBUG, host=HOST, port=PORT)
+
+

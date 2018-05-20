@@ -5,12 +5,9 @@
 <form method="POST" action="" class="form">
     {{ form.hidden_tag() }}
     {% for field in form %}
-        {% if field == form.crew %}
-        <span>What Crew are you on?</span>
-        {% endif %}
-        {{ render_field(field) }}
+    {{ render_field(field) }}
     {% endfor %}
 
-    <button type="submit" id="submit">Register!</button>
+    <button type="submit" id="submit">Add Equipment</button>
 </form>
 {% endblock %}
