@@ -8,5 +8,11 @@
       <first-sync>true</first-sync>
       <introspection-schemas>*:</introspection-schemas>
     </data-source>
+    <data-source name="Fleet.db [2]" uuid="e3730c63-9f4e-47c2-b94e-32f8cfa637ed">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+      <secret-storage>master_key</secret-storage>
+      <auth-required>false</auth-required>
+      <first-sync>true</first-sync>
+    </data-source>
   </component>
 </project>

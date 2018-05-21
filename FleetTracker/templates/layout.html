@@ -13,6 +13,7 @@
     <a href="{{ url_for('home') }}">Home</a>
     {% if current_user.is_authenticated %}
         <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('main') }}">Equipment List</a>
         {% if current_user.is_admin %}
         <a href="{{ url_for('add') }}">Add Equipment</a>
         {% endif %}

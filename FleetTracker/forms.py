@@ -1,9 +1,10 @@
-from flask_wtf import Form
-from wtforms import StringField, PasswordField, TextAreaField, SelectField
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, TextAreaField, SelectField, RadioField
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
 from wtforms import ValidationError
 from models import User, Equipment
+from flask_login import current_user
 
 
 def name_exists(form, field):
@@ -21,7 +22,7 @@ def equipment_exists(form, field):
         raise ValidationError('Equipment with that unit number already exists.')
 
 
-class RegisterForm(Form):
+class RegisterForm(FlaskForm):
     username = StringField(
         'Username',
         validators=[
@@ -58,7 +59,7 @@ class RegisterForm(Form):
     )
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     username = StringField(
         'username',
         validators=[
@@ -73,7 +74,7 @@ class LoginForm(Form):
         ])
 
 
-class AddForm(Form):
+class AddForm(FlaskForm):
     unitnumber = StringField(
         'unitnumber',
         validators=[
@@ -94,5 +95,13 @@ class AddForm(Form):
                       )
 
 
+class EquipmentForm(FlaskForm):
+
+    equipment = RadioField('equipment list')
+
+    crew = SelectField(
+        'Crew',
+        choices=[('red', 'Red'), ('blue', 'Blue')]
+    )
 
 

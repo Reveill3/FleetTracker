@@ -10,7 +10,7 @@ import models
 
 DEBUG = True
 PORT = 8080
-HOST = '10.209.139.170'
+HOST = '10.105.160.35'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
@@ -70,7 +70,7 @@ def login():
         if check_password_hash(user.password, form.password.data):
             login_user(user)
             flash("You've been logged in.", 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('main'))
         else:
             flash('Your username or password is incorrect', 'error')
         redirect(url_for('home'))
@@ -94,6 +94,26 @@ def add():
         flash('{} {} added.'.format(form.type.data, form.unitnumber.data))
         redirect('home')
     return render_template('add.html', form=form)
+
+
+@app.route('/main', methods=('GET', 'POST'))
+@login_required
+def main():
+    equipment_list = list(models.Equipment.select().where(models.Equipment.crew == current_user.crew))
+    unitnumbers = []
+    for equipment in equipment_list:
+        unitnumbers.append((equipment.unitnumber, equipment.unitnumber))
+    form = forms.EquipmentForm()
+    form.equipment.choices = unitnumbers
+    if form.validate_on_submit():
+        if form.crew.data == current_user.crew:
+            flash('{} is already on {} crew.'.format(form.equipment.data, form.crew.data))
+        else:
+            models.Equipment.update(crew=form.crew.data).where(
+                                                        models.Equipment.unitnumber == form.equipment.data).execute()
+            flash('{} moved to {} crew'.format(form.equipment.data, form.crew.data))
+        return redirect(url_for('main'))
+    return render_template('main.html', form=form , unitnumbers=unitnumbers)
 
 
 if __name__ == '__main__':
