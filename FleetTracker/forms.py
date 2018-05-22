@@ -95,11 +95,21 @@ class AddForm(FlaskForm):
                       )
 
 
-class EquipmentForm(FlaskForm):
+class PumpForm(FlaskForm):
 
-    equipment = RadioField('equipment list')
+    pumps = RadioField('pumps')
 
-    crew = SelectField(
+    pumps_crew = SelectField(
+        'Crew',
+        choices=[('red', 'Red'), ('blue', 'Blue')]
+    )
+
+
+class BlenderForm(FlaskForm):
+
+    blenders = RadioField('blenders')
+
+    blenders_crew = SelectField(
         'Crew',
         choices=[('red', 'Red'), ('blue', 'Blue')]
     )

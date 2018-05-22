@@ -1,6 +1,6 @@
 from flask import (Flask, g, render_template, flash, redirect, url_for,
-                   abort)
-
+                   make_response, request)
+import json
 from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user,
                              login_required, current_user)
@@ -10,7 +10,7 @@ import models
 
 DEBUG = True
 PORT = 8080
-HOST = '10.209.139.170'
+HOST = '10.105.160.35'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
@@ -24,18 +24,26 @@ class ValidateDenied(Exception):
     pass
 
 
+def get_saved_data():
+    try:
+        data = json.loads(request.cookies.get('user_input'))
+    except TypeError:
+        data = {}
+    return data
+
+
 @app.errorhandler(ValidateDenied)
 def redirect_on_validate_denied(error):
     return redirect(url_for('main'))
 
 
-def validate_form(form):
-    models.Equipment.update(crew=form.crew.data).where(
+def validate_form(equipment_field, crew_field):
+    models.Equipment.update(crew=crew_field.data).where(
         models.Equipment.unitnumber ==
-        form.equipment.data).execute()
-    flash('{} moved to {} crew'.format(form.equipment.data, form.crew.data))
+        equipment_field.data).execute()
+    flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
     models.Movement.create(user=g.user.id, message='{} has moved {} to {} crew'.format(
-        current_user.username, form.equipment.data, form.crew.data))
+        current_user.username, equipment_field.data, crew_field.data))
 
 
 
@@ -119,35 +127,56 @@ def add():
 @app.route('/main', methods=('GET', 'POST'))
 @login_required
 def main():
+    response = make_response(redirect(url_for('main')))
+    data = get_saved_data()
+    data.update(dict(request.form.items()))
+    response.set_cookie('user_input', json.dumps(data))
     movement_stream = models.Movement.select().order_by(models.Movement.timestamp.desc()).limit(10)
     pump_numbers = models.create_list(current_user, 'pump')
     blender_numbers = models.create_list(current_user, 'blender')
-    pump_form = forms.EquipmentForm()
-    blender_form = forms.EquipmentForm()
-    blender_form.equipment.choices = blender_numbers
-    pump_form.equipment.choices = pump_numbers
+    pump_form = forms.PumpForm()
+    blender_form = forms.BlenderForm()
+    blender_form.blenders.choices = blender_numbers
+    pump_form.pumps.choices = pump_numbers
 
-    if pump_form.validate_on_submit():
-        if pump_form.crew.data == current_user.crew:
-            flash('{} is already on {} crew.'.format(pump_form.equipment.data, pump_form.crew.data))
+    if pump_form.validate_on_submit() & blender_form.validate_on_submit():
+        if pump_form.pumps_crew.data == current_user.crew:
+            flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
         else:
-            validate_form(pump_form)
+            validate_form(pump_form.pumps, pump_form.pumps_crew)
 
         if blender_form.validate_on_submit():
-            if blender_form.crew.data == current_user.crew:
-                flash('{} is already on {} crew.'.format(blender_form.equipment.data, blender_form.crew.data))
+            if blender_form.blenders_crew.data == current_user.crew:
+                flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
             else:
-                validate_form(blender_form)
-        return redirect(url_for('main'))
-    elif blender_form.validate_on_submit():
-        if blender_form.crew.data == current_user.crew:
-            flash('{} is already on {} crew.'.format(blender_form.equipment.data, blender_form.crew.data))
-        else:
-            validate_form(blender_form)
-        return redirect(url_for('main'))
+                validate_form(blender_form.blenders, blender_form.blenders_crew)
+                return response
 
-    return render_template('main.html', pump_form=pump_form, blender_form=blender_form,
+    elif blender_form.validate_on_submit():
+        if blender_form.blenders_crew.data == current_user.crew:
+            flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
+        else:
+            validate_form(blender_form.blenders, blender_form.blenders_crew)
+            return response
+    else:
+        if pump_form.validate_on_submit():
+            if pump_form.pumps_crew.data == current_user.crew:
+                flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
+            else:
+                validate_form(pump_form.pumps, pump_form.pumps_crew)
+                return response
+
+    return render_template('main.html', saves=get_saved_data(), pump_form=pump_form, blender_form=blender_form,
                            unitnumbers=pump_numbers, movement_stream=movement_stream)
+
+
+@app.route('/save', methods=['POST'])
+def save():
+    response = make_response(redirect(url_for('main')))
+    data = get_saved_data()
+    data.update(dict(request.form.items()))
+    response.set_cookie('user_input', json.dumps(data))
+    return response
 
 
 if __name__ == '__main__':

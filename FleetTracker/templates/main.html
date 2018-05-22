@@ -13,7 +13,12 @@
     <h1>Pumps</h1>
     {{ pump_form.hidden_tag() }}
     {% for field in pump_form %}
-        {{ render_field(field) }}
+        {% if field == pump_form.pumps_crew %}
+            {{ saves.get('pumps_crew','') }}
+            <div>{{ field(placeholder=saves.get('pumps_crew', '').title()) }}</div>
+        {% else %}
+            {{ render_field(field) }}
+        {% endif %}
     {% endfor %}
     <h1>Blenders</h1>
     {{ blender_form.hidden_tag() }}
