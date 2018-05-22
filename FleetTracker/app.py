@@ -10,7 +10,7 @@ import models
 
 DEBUG = True
 PORT = 8080
-HOST = '10.105.160.35'
+HOST = '10.209.139.170'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
@@ -18,6 +18,25 @@ app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
+class ValidateDenied(Exception):
+    pass
+
+
+@app.errorhandler(ValidateDenied)
+def redirect_on_validate_denied(error):
+    return redirect(url_for('main'))
+
+
+def validate_form(form):
+    models.Equipment.update(crew=form.crew.data).where(
+        models.Equipment.unitnumber ==
+        form.equipment.data).execute()
+    flash('{} moved to {} crew'.format(form.equipment.data, form.crew.data))
+    models.Movement.create(user=g.user.id, message='{} has moved {} to {} crew'.format(
+        current_user.username, form.equipment.data, form.crew.data))
+
 
 
 @login_manager.user_loader
@@ -90,30 +109,45 @@ def add():
     """validate add equipment form. renders add equipment page with form."""
     form = forms.AddForm()
     if form.validate_on_submit():
-        models.Equipment.add_equipment(unitnumber=form.unitnumber.data, etype=form.type.data, crew=form.crew.data)
+        models.Equipment.add_equipment(unitnumber=form.unitnumber.data, etype=form.type.data,
+                                       crew=form.crew.data)
         flash('{} {} added.'.format(form.type.data, form.unitnumber.data))
         redirect('home')
-    return render_template('add.html', form=form)
+    return render_template('add.html', form=form, user=current_user)
 
 
 @app.route('/main', methods=('GET', 'POST'))
 @login_required
 def main():
-    equipment_list = list(models.Equipment.select().where(models.Equipment.crew == current_user.crew))
-    unitnumbers = []
-    for equipment in equipment_list:
-        unitnumbers.append((equipment.unitnumber, equipment.unitnumber))
-    form = forms.EquipmentForm()
-    form.equipment.choices = unitnumbers
-    if form.validate_on_submit():
-        if form.crew.data == current_user.crew:
-            flash('{} is already on {} crew.'.format(form.equipment.data, form.crew.data))
+    movement_stream = models.Movement.select().order_by(models.Movement.timestamp.desc()).limit(10)
+    pump_numbers = models.create_list(current_user, 'pump')
+    blender_numbers = models.create_list(current_user, 'blender')
+    pump_form = forms.EquipmentForm()
+    blender_form = forms.EquipmentForm()
+    blender_form.equipment.choices = blender_numbers
+    pump_form.equipment.choices = pump_numbers
+
+    if pump_form.validate_on_submit():
+        if pump_form.crew.data == current_user.crew:
+            flash('{} is already on {} crew.'.format(pump_form.equipment.data, pump_form.crew.data))
         else:
-            models.Equipment.update(crew=form.crew.data).where(
-                                                        models.Equipment.unitnumber == form.equipment.data).execute()
-            flash('{} moved to {} crew'.format(form.equipment.data, form.crew.data))
+            validate_form(pump_form)
+
+        if blender_form.validate_on_submit():
+            if blender_form.crew.data == current_user.crew:
+                flash('{} is already on {} crew.'.format(blender_form.equipment.data, blender_form.crew.data))
+            else:
+                validate_form(blender_form)
         return redirect(url_for('main'))
-    return render_template('main.html', form=form , unitnumbers=unitnumbers)
+    elif blender_form.validate_on_submit():
+        if blender_form.crew.data == current_user.crew:
+            flash('{} is already on {} crew.'.format(blender_form.equipment.data, blender_form.crew.data))
+        else:
+            validate_form(blender_form)
+        return redirect(url_for('main'))
+
+    return render_template('main.html', pump_form=pump_form, blender_form=blender_form,
+                           unitnumbers=pump_numbers, movement_stream=movement_stream)
 
 
 if __name__ == '__main__':

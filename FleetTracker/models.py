@@ -7,6 +7,15 @@ from peewee import *
 DATABASE = SqliteDatabase('Fleet.db')
 
 
+def create_list(user, equipment_type):
+    query = list(Equipment.select().where(Equipment.crew == user.crew,
+                                          Equipment.type == equipment_type))
+    equipment_list = []
+    for equipment in query:
+        equipment_list.append((equipment.unitnumber, equipment.unitnumber))
+    return equipment_list
+
+
 class User(UserMixin, Model):
     username = CharField(unique=True)
     email = CharField(unique=True)
@@ -47,7 +56,7 @@ class Equipment(Model):
                 cls.create(
                     unitnumber=unitnumber,
                     type=etype,
-                    crew=crew
+                    crew=crew,
                 )
         except IntegrityError:
             raise IntegrityError('That Equipment already exists')
@@ -57,9 +66,17 @@ class Equipment(Model):
         order_by = ('-addedon',)
 
 
+class Movement(Model):
+    user = ForeignKeyField(User, related_name='movement')
+    message = TextField()
+    timestamp = DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        database = DATABASE
+        order_by = ('-timestamp',)
 
 
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User, Equipment], safe=True)
+    DATABASE.create_tables([User, Equipment, Movement], safe=True)
     DATABASE.close()
