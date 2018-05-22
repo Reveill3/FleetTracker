@@ -47,7 +47,6 @@ class Equipment(Model):
     unitnumber = CharField(unique=True)
     type = CharField()
     crew = CharField()
-    addedon = DateTimeField(default=datetime.datetime.now)
 
     @classmethod
     def add_equipment(cls, unitnumber, etype, crew):
@@ -63,7 +62,6 @@ class Equipment(Model):
 
     class Meta:
         database = DATABASE
-        order_by = ('-addedon',)
 
 
 class Movement(Model):

@@ -6,6 +6,8 @@ from wtforms import ValidationError
 from models import User, Equipment
 from flask_login import current_user
 
+crews = [('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'), ('onyx', 'Onyx'),
+         ('purple', 'Purple'), ('silver', 'Silver'), ('gold', 'Gold')]
 
 def name_exists(form, field):
     if User.select().where(User.username == field.data).exists():
@@ -55,7 +57,7 @@ class RegisterForm(FlaskForm):
 
     crew = SelectField(
         'Crew',
-        choices=[('red', 'Red'), ('blue', 'Blue')]
+        choices=crews
     )
 
 
@@ -91,7 +93,7 @@ class AddForm(FlaskForm):
                        )
 
     crew = SelectField('crew',
-                       choices=[('red', 'Red'), ('blue', 'Blue')]
+                       choices=crews
                       )
 
 
@@ -101,7 +103,7 @@ class PumpForm(FlaskForm):
 
     pumps_crew = SelectField(
         'Crew',
-        choices=[('red', 'Red'), ('blue', 'Blue')]
+        choices=crews
     )
 
 
@@ -111,7 +113,17 @@ class BlenderForm(FlaskForm):
 
     blenders_crew = SelectField(
         'Crew',
-        choices=[('red', 'Red'), ('blue', 'Blue')]
+        choices=crews
+    )
+
+
+class HydrationForm(FlaskForm):
+
+    hydrations = RadioField('blenders')
+
+    blenders_crew = SelectField(
+        'Crew',
+        choices=crews
     )
 
 

@@ -14,7 +14,6 @@
     {{ pump_form.hidden_tag() }}
     {% for field in pump_form %}
         {% if field == pump_form.pumps_crew %}
-            {{ saves.get('pumps_crew','') }}
             <div>{{ field(placeholder=saves.get('pumps_crew', '').title()) }}</div>
         {% else %}
             {{ render_field(field) }}
