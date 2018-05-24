@@ -7,8 +7,16 @@ from peewee import *
 DATABASE = SqliteDatabase('Fleet.db')
 
 
-def create_list(user, equipment_type):
-    query = list(Equipment.select().where(Equipment.crew == user.crew,
+def check_crew(crew, unit_number):
+    """ Checks to see if the current piece of equipment selected is
+    already on the selected crew you want to move it to"""
+    query = Equipment.select().where(Equipment.unitnumber == unit_number).get()
+    return query.crew == crew
+
+
+def create_list(crew, equipment_type):
+    """ Populates list of unit numbers for users crew or admins selected crew. This is used to populate form choices """
+    query = list(Equipment.select().where(Equipment.crew == crew,
                                           Equipment.type == equipment_type))
     equipment_list = []
     for equipment in query:

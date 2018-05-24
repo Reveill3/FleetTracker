@@ -82,14 +82,15 @@ class AddForm(FlaskForm):
         validators=[
             DataRequired(),
             Regexp(
-                r'[0-9]{2}\w-[0-9]{5}',
+                r'[0-9]{2}\w+-[0-9]{4,5}',
                 message='input must be in this format: 53Q-11456'
             ), equipment_exists
         ]
     )
 
     type = SelectField('type',
-                       choices=[('pump', 'Pump'), ('blender', 'Blender')]
+                       choices=[('pump', 'Pump'), ('blender', 'Blender'), ('float', 'Float'),
+                                ('hydration', 'Hydration')]
                        )
 
     crew = SelectField('crew',
@@ -121,9 +122,24 @@ class HydrationForm(FlaskForm):
 
     hydrations = RadioField('blenders')
 
-    blenders_crew = SelectField(
+    hydrations_crew = SelectField(
         'Crew',
         choices=crews
     )
 
 
+class FloatForm(FlaskForm):
+
+    floats = RadioField('floats')
+
+    floats_crew = SelectField(
+        'Crew',
+        choices=crews
+    )
+
+
+class AdminForm(FlaskForm):
+
+    crew = SelectField('crew',
+                       choices=crews
+                       )

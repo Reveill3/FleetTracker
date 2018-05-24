@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from 'macros.html' import render_field %}
+
+{% block content %}
+<form action="" method="POST">
+{% for field in admin_form %}
+    {{ admin_form.hidden_tag() }}
+    {{ render_field(field) }}
+{% endfor %}
+    <button type="submit">Show Equipment List</button>
+</form>
+<article>
+    {% for movement in movement_stream %}
+    <div class="stream">{{ movement.message }}</div>
+    {% endfor %}
+</article>
+{% endblock %}
