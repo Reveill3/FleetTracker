@@ -10,7 +10,7 @@ import models
 
 DEBUG = True
 PORT = 8080
-HOST = '10.105.160.35'
+HOST = '10.209.139.170'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'

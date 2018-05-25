@@ -1,0 +1,75 @@
+/* =================================
+  Base Element Styles
+==================================== */
+body {
+    font-family: 'Varela Round', sans-serif;
+    line-height: 1.6;
+    color: #3A3A40;
+}
+
+header {
+    background: #556B2F;
+    height: 100px;
+}
+
+/* =================================
+  Base Layout Styles
+==================================== */
+
+.stream li {
+    padding-top: 10px;
+    text-align: center;
+    box-shadow: inset 0px -1px #00000024;
+}
+
+.main-nav {
+    background: #556B2F;
+}
+
+.main-nav a:hover {
+    color: white;
+}
+
+
+/* =================================
+  Media Queries
+==================================== */
+
+@media (min-width: 769px) {
+    .container {
+        width: 70%;
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .wrap {
+        min-height: calc(100vh - 89px);
+    }
+
+    .stream li {
+        padding-top: 10px;
+        text-align: center;
+        box-shadow: inset 0px -1px #00000024;
+    }
+
+    .main-nav a {
+        color: #3a3a3a;
+        margin-top: 35px;
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 18px;
+    }
+
+    form {
+        display: inline-block;
+        margin-right: 9em;
+    }
+
+    .main-nav {
+        margin-left: 70%;
+    }
+
+
+
+}
+

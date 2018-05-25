@@ -10,8 +10,10 @@
     <button type="submit">Show Equipment List</button>
 </form>
 <article>
-    {% for movement in movement_stream %}
-    <div class="stream">{{ movement.message }}</div>
-    {% endfor %}
+    <ol class="stream">
+        {% for movement in movement_stream %}
+        <li>{{ movement.message }}</li>
+        {% endfor %}
+    </ol>
 </article>
 {% endblock %}
