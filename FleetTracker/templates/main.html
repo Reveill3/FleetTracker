@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% from 'macros.html' import render_field %}
+
+{% block content %}
+{% if current_user.is_admin %}
+<div class="form">
+    <form action='{{ url_for("move_pump", crew=crew) }}' method="POST">
+        <h1>Pumps</h1>
+        {{ pump_form.hidden_tag() }}
+        {% for field in pump_form %}
+        {% if field == pump_form.pumps_crew %}
+        <div>{{ field(placeholder=saves.get('pumps_crew', '').title()) }}</div>
+        {% else %}
+        {{ render_field(field) }}
+        {% endif %}
+        {% endfor %}
+        <button type="submit">Send Pump</button>
+    </form>
+    {% else %}
+    <form action='{{ url_for("move_pump") }}' method="POST">
+        <h1>Pumps</h1>
+        {{ pump_form.hidden_tag() }}
+        {% for field in pump_form %}
+            {% if field == pump_form.pumps_crew %}
+                <div>{{ field(placeholder=saves.get('pumps_crew', '').title()) }}</div>
+            {% else %}
+                {{ render_field(field) }}
+            {% endif %}
+        {% endfor %}
+        <button type="submit">Send Pump</button>
+    </form>
+    {% endif %}
+</div>
+<div class="form">
+
+    {% if current_user.is_admin %}
+    <form action='{{ url_for("move_blender", crew=crew) }}' method="POST">
+        <h1>Blenders</h1>
+        {{ blender_form.hidden_tag() }}
+        {% for field in blender_form %}
+        {{ render_field(field) }}
+        {% endfor %}
+        <button type="submit">Send Blender</button>
+    </form>
+    {% else %}
+    <form action="{{ url_for('move_blender') }}" method="POST">
+        <h1>Blenders</h1>
+        {{ blender_form.hidden_tag() }}
+        {% for field in blender_form %}
+            {{ render_field(field) }}
+        {% endfor %}
+        <button type="submit">Send Blender</button>
+    </form>
+    {% endif %}
+</div>
+{% if current_user.is_admin %}
+<form action='{{ url_for("move_hydration", crew=crew) }}' method="POST">
+    <h1>Hydrations</h1>
+    {{ hydration_form.hidden_tag() }}
+    {% for field in hydration_form %}
+    {{ render_field(field) }}
+    {% endfor %}
+    <button type="submit">Send Hydration</button>
+</form>
+{% else %}
+<form action='{{ url_for("move_hydration") }}' method="POST">
+    <h1>Hydrations</h1>
+    {{ hydration_form.hidden_tag() }}
+    {% for field in hydration_form %}
+    {{ render_field(field) }}
+    {% endfor %}
+    <button type="submit">Send Hydration</button>
+</form>
+{% endif %}
+{% if current_user.is_admin %}
+<form action='{{ url_for("move_float", crew=crew) }}' method="POST">
+    <h1>Floats</h1>
+    {{ float_form.hidden_tag() }}
+    {% for field in float_form %}
+    {{ render_field(field) }}
+    {% endfor %}
+    <button type="submit">Send Float</button>
+</form>
+{% else %}
+
+<form action='{{ url_for("move_float") }}' method="POST">
+    <h1>Floats</h1>
+    {{ float_form.hidden_tag() }}
+    {% for field in float_form %}
+    {{ render_field(field) }}
+    {% endfor %}
+    <button type="submit">Send Float</button>
+</form>
+{% endif %}
+<article>
+    <ol class="stream">
+        {% for movement in movement_stream %}
+        <li>{{ movement.message }}</li>
+        {% endfor %}
+    </ol>
+</article>
+{% endblock %}
