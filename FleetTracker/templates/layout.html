@@ -8,11 +8,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/static/css/normalize.css">
-    <link rel="stylesheet" href="/static/css/styles.css?version=4">
+    <link rel="stylesheet" href="/static/css/styles.css?version=6">
 </head>
 <body>
 <div class="wrap">
     <header>
+        {% if crew %}
+        <h1 class="title">Equipment List for {{ crew.title() }} Crew</h1>
+        {% else %}
+        <h1 class="title-admin">Pick A Crew</h1>
+        {% endif %}
         <nav class="main-nav">
             <a href="{{ url_for('home') }}">Home</a>
             {% if current_user.is_authenticated %}
@@ -35,7 +40,7 @@
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div>{{ message }}</div>
+                <div class="flash">{{ message }}</div>
             {% endfor %}
         {% endif %}
     {% endwith %}

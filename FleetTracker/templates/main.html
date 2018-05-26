@@ -8,26 +8,26 @@
         <h1>Pumps</h1>
         {{ pump_form.hidden_tag() }}
         {% for field in pump_form %}
-        {% if field == pump_form.pumps_crew %}
-        <div>{{ field(placeholder=saves.get('pumps_crew', '').title()) }}</div>
+        {% if field == pump_form.pumps %}
+        {{ render_field(field, class="radio") }}
         {% else %}
-        {{ render_field(field) }}
+        {{ render_field(field, class="under-radio") }}
         {% endif %}
         {% endfor %}
-        <button type="submit">Send Pump</button>
+        <button type="submit" class="button">Send Pump</button>
     </form>
     {% else %}
     <form action='{{ url_for("move_pump") }}' method="POST">
         <h1>Pumps</h1>
         {{ pump_form.hidden_tag() }}
         {% for field in pump_form %}
-            {% if field == pump_form.pumps_crew %}
-                <div>{{ field(placeholder=saves.get('pumps_crew', '').title()) }}</div>
-            {% else %}
-                {{ render_field(field) }}
+        {% if field == pump_form.pumps %}
+            {{ render_field(field, class="radio") }}
+        {% else %}
+            {{ render_field(field, class="under-radio") }}
             {% endif %}
         {% endfor %}
-        <button type="submit">Send Pump</button>
+        <button type="submit" class="button">Send Pump</button>
     </form>
     {% endif %}
 </div>
@@ -38,48 +38,71 @@
         <h1>Blenders</h1>
         {{ blender_form.hidden_tag() }}
         {% for field in blender_form %}
-        {{ render_field(field) }}
+        {% if field == blender_form.blenders %}
+            {{ render_field(field, class="radio") }}
+        {% else %}
+            {{ render_field(field, class="under-radio") }}
+        {% endif %}
         {% endfor %}
-        <button type="submit">Send Blender</button>
+        <button type="submit" class="button">Send Blender</button>
     </form>
     {% else %}
     <form action="{{ url_for('move_blender') }}" method="POST">
         <h1>Blenders</h1>
         {{ blender_form.hidden_tag() }}
         {% for field in blender_form %}
-            {{ render_field(field) }}
+        {% if field == blender_form.blenders %}
+            {{ render_field(field, class="radio") }}
+        {% else %}
+            {{ render_field(field, class="under-radio") }}
+        {% endif %}
         {% endfor %}
-        <button type="submit">Send Blender</button>
+        <button type="submit" class="button">Send Blender</button>
     </form>
     {% endif %}
 </div>
-{% if current_user.is_admin %}
-<form action='{{ url_for("move_hydration", crew=crew) }}' method="POST">
-    <h1>Hydrations</h1>
-    {{ hydration_form.hidden_tag() }}
-    {% for field in hydration_form %}
-    {{ render_field(field) }}
-    {% endfor %}
-    <button type="submit">Send Hydration</button>
-</form>
-{% else %}
-<form action='{{ url_for("move_hydration") }}' method="POST">
-    <h1>Hydrations</h1>
-    {{ hydration_form.hidden_tag() }}
-    {% for field in hydration_form %}
-    {{ render_field(field) }}
-    {% endfor %}
-    <button type="submit">Send Hydration</button>
-</form>
-{% endif %}
+<div class="form">
+    {% if current_user.is_admin %}
+    <form action='{{ url_for("move_hydration", crew=crew) }}' method="POST">
+        <h1>Hydrations</h1>
+        {{ hydration_form.hidden_tag() }}
+        {% for field in hydration_form %}
+        {% if field == hydration_form.hydrations %}
+        {{ render_field(field, class="radio") }}
+        {% else %}
+        {{ render_field(field, class="under-radio") }}
+        {% endif %}
+        {% endfor %}
+        <button type="submit" class="button">Send Hydration</button>
+    </form>
+    {% else %}
+    <form action='{{ url_for("move_hydration") }}' method="POST">
+        <h1>Hydrations</h1>
+        {{ hydration_form.hidden_tag() }}
+        {% for field in hydration_form %}
+        {% if field == hydration_form.hydrations %}
+        {{ render_field(field, class="radio") }}
+        {% else %}
+        {{ render_field(field, class="under-radio") }}
+        {% endif %}
+        {% endfor %}
+        <button type="submit" class="button">Send Hydration</button>
+    </form>
+    {% endif %}
+</div>
+<div class="form">
 {% if current_user.is_admin %}
 <form action='{{ url_for("move_float", crew=crew) }}' method="POST">
     <h1>Floats</h1>
     {{ float_form.hidden_tag() }}
     {% for field in float_form %}
-    {{ render_field(field) }}
+    {% if field == float_form.floats %}
+    {{ render_field(field, class="radio") }}
+    {% else %}
+    {{ render_field(field, class="under-radio") }}
+    {% endif %}
     {% endfor %}
-    <button type="submit">Send Float</button>
+    <button type="submit" class="button">Send Float</button>
 </form>
 {% else %}
 
@@ -87,13 +110,19 @@
     <h1>Floats</h1>
     {{ float_form.hidden_tag() }}
     {% for field in float_form %}
-    {{ render_field(field) }}
+    {% if field == float_form.floats %}
+    {{ render_field(field, class="radio") }}
+    {% else %}
+    {{ render_field(field, class="under-radio") }}
+    {% endif %}
     {% endfor %}
-    <button type="submit">Send Float</button>
+    <button type="submit" class="button">Send Float</button>
 </form>
 {% endif %}
+</div>
 <article>
-    <ol class="stream">
+    <h1 class="stream">Recent Equipment Movement</h1>
+    <ol class="stream-content">
         {% for movement in movement_stream %}
         <li>{{ movement.message }}</li>
         {% endfor %}

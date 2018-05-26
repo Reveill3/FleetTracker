@@ -2,15 +2,16 @@
 {% from 'macros.html' import render_field %}
 
 {% block content %}
-<form action="" method="POST">
+<form action="" method="POST" class="master">
 {% for field in admin_form %}
     {{ admin_form.hidden_tag() }}
     {{ render_field(field) }}
 {% endfor %}
-    <button type="submit">Show Equipment List</button>
+    <button type="submit" class="button">Show Equipment List</button>
 </form>
 <article>
-    <ol class="stream">
+    <h1 class="stream">Recent Equipment Movement</h1>
+    <ol class="stream-content">
         {% for movement in movement_stream %}
         <li>{{ movement.message }}</li>
         {% endfor %}

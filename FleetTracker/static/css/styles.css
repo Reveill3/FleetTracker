@@ -10,7 +10,9 @@ body {
 header {
     background: #556B2F;
     height: 100px;
+    display: block;
 }
+
 
 /* =================================
   Base Layout Styles
@@ -23,6 +25,7 @@ header {
 }
 
 .main-nav {
+    display: block;
     background: #556B2F;
 }
 
@@ -30,6 +33,85 @@ header {
     color: white;
 }
 
+.main-nav a {
+    display: block;
+    margin-top: -4px;
+}
+
+.form {
+    vertical-align: top;
+    margin-right: 150px;
+    display: block;
+}
+
+.stream {
+    text-align: center;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+}
+
+.flash {
+    text-align: center;
+    background-color: slategrey;
+    margin-bottom: 10px;
+}
+
+.stream-content {
+    text-align: center;
+}
+
+.stream-content li {
+    margin-bottom: 5px;
+}
+
+.button {
+    background-color: #3e474f;
+    color: white;
+    border-radius: 10px;
+    margin-left: 10px;
+
+}
+
+.button:hover {
+    border-color: #3e474f;
+    transform: scale(1.05);
+}
+
+.master {
+    text-align: center;
+}
+
+.title{
+    display: block;
+    text-align: center;
+    margin-left: 0;
+    opacity: .5;
+    margin-bottom: 0;
+}
+
+.title-admin {
+    display: block;
+    text-align: center;
+    padding-left: 45%;
+}
+
+.radio li input {
+    visibility: hidden;
+}
+
+.radio li input:checked+label {
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.under-radio {
+    margin-left: 22px;
+}
+
+.container {
+    padding-top: 30%;
+}
 
 /* =================================
   Media Queries
@@ -40,6 +122,7 @@ header {
         width: 70%;
         max-width: 1150px;
         margin: 0 auto;
+        padding-top: 0;
     }
 
     .wrap {
@@ -60,16 +143,22 @@ header {
         font-size: 18px;
     }
 
-    form {
+    .form {
         display: inline-block;
-        margin-right: 9em;
     }
 
     .main-nav {
-        margin-left: 70%;
+        margin-left: 5%;
+        display: inline-block;
     }
 
+    .title,
+    .title-admin {
+        display: inline-block;
+    }
 
-
+    .title {
+        margin-left: 35%;
+    }
 }
 
