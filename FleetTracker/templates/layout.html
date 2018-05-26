@@ -12,30 +12,34 @@
 </head>
 <body>
 <div class="wrap">
-    <header>
-        {% if crew %}
-        <h1 class="title">Equipment List for {{ crew.title() }} Crew</h1>
-        {% else %}
-        <h1 class="title-admin">Pick A Crew</h1>
-        {% endif %}
-        <nav class="main-nav">
-            <a href="{{ url_for('home') }}">Home</a>
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('logout') }}">Logout</a>
-                {% if current_user.is_admin %}
-                <a href="{{ url_for('admin') }}">Master Equipment List</a>
-                {% else %}
-                <a href="{{ url_for('main') }}">Equipment List</a>
-                {% endif %}
-                {% if current_user.is_admin %}
-                <a href="{{ url_for('add') }}">Add Equipment</a>
-                {% endif %}
+    <div class="header-container">
+        <header>
+            {% if crew %}
+            <h1 class="title">Equipment List for {{ crew.title() }} Crew</h1>
+            {% elif current_user.is_admin %}
+            <h1 class="title-admin">Pick A Crew</h1>
             {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('register') }}">Register</a>
+            <h1 class="title">Equipment List for {{ current_user.crew.title() }} Crew</h1>
             {% endif %}
-        </nav>
-    </header>
+            <nav class="main-nav">
+                <a href="{{ url_for('home') }}">Home</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                    {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin') }}">Master Equipment List</a>
+                    {% else %}
+                    <a href="{{ url_for('main') }}">Equipment List</a>
+                    {% endif %}
+                    {% if current_user.is_admin %}
+                    <a href="{{ url_for('add') }}">Add Equipment</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </nav>
+        </header>
+    </div>
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}

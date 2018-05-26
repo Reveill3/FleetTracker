@@ -1,15 +1,11 @@
-{% extends "layout.html" %}
+{% extends "layout-home.html" %}
 
 {% block content %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Odessa Fleet Tracker</title>
-</head>
 <body>
-<p>Hello</p>
 {% if current_user.is_authenticated %}
-    {{ current_user.crew }}
+<p>Hello, {{ current_user.username }} you are currently assigned to {{ current_user.crew.title() }} crew.</p>
+{% else %}
+<p>Hello, Please sign in to continue.</p>
 {% endif %}
 </body>
 </html>

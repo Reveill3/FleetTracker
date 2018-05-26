@@ -9,8 +9,8 @@ body {
 
 header {
     background: #556B2F;
-    height: 100px;
     display: block;
+    box-shadow: 0px 0px 10px black;
 }
 
 
@@ -27,6 +27,7 @@ header {
 .main-nav {
     display: block;
     background: #556B2F;
+    text-align: center;
 }
 
 .main-nav a:hover {
@@ -36,12 +37,19 @@ header {
 .main-nav a {
     display: block;
     margin-top: -4px;
+    color: #3A3A40;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+    border-bottom: solid 2px;
+    font-size: 20px;
 }
 
 .form {
     vertical-align: top;
-    margin-right: 150px;
+    margin-right: 0px;
     display: block;
+    padding-top: 10px;
 }
 
 .stream {
@@ -85,18 +93,22 @@ header {
     display: block;
     text-align: center;
     margin-left: 0;
-    opacity: .5;
-    margin-bottom: 0;
+    opacity: .9;
+    margin-top: 0px;
 }
 
 .title-admin {
     display: block;
     text-align: center;
-    padding-left: 45%;
 }
 
 .radio li input {
     visibility: hidden;
+}
+
+.radio li label {
+    padding: 4px 10px;
+
 }
 
 .radio li input:checked+label {
@@ -110,19 +122,35 @@ header {
 }
 
 .container {
-    padding-top: 30%;
+    margin-top: 0;
+    padding-top: 30vh;
+    text-align: center;
+
 }
 
+.field {
+    padding-top: 10px;
+
+}
+
+.header-container {
+    position: fixed;
+    width: 100%;
+}
 /* =================================
   Media Queries
 ==================================== */
 
 @media (min-width: 769px) {
+
+    header {
+        height: 100px;
+    }
     .container {
-        width: 70%;
+        width: 90%;
         max-width: 1150px;
         margin: 0 auto;
-        padding-top: 0;
+        padding-top: 5%;
     }
 
     .wrap {
@@ -144,21 +172,24 @@ header {
     }
 
     .form {
+        padding-right: 1em;
+        padding-left:  1em;
         display: inline-block;
     }
 
     .main-nav {
         margin-left: 5%;
-        display: inline-block;
+        float: right;
     }
 
     .title,
     .title-admin {
-        display: inline-block;
+        float: left;
+        padding-left: 0;
     }
 
     .title {
-        margin-left: 35%;
+        float: left;
     }
 }
 

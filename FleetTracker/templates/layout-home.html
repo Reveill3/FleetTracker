@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{% block title %}FleetTracker{% endblock %}</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/static/css/normalize.css">
+    <link rel="stylesheet" href="/static/css/styles.css?version=6">
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1 class="title">Odessa Fleet Tracker</h1>
+        <nav class="main-nav">
+            <a href="{{ url_for('home') }}">Home</a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('admin') }}">Master Equipment List</a>
+            {% else %}
+            <a href="{{ url_for('main') }}">Equipment List</a>
+            {% endif %}
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('add') }}">Add Equipment</a>
+            {% endif %}
+            {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="container">
+
+        {% block content %}{% endblock %}
+    </div><!--/.container-->
+</div><!--/.wrap-->
+</body>
+</html>

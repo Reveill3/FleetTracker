@@ -2,8 +2,8 @@
 {% from 'macros.html' import render_field %}
 
 {% block content %}
-{% if current_user.is_admin %}
 <div class="form">
+    {% if current_user.is_admin %}
     <form action='{{ url_for("move_pump", crew=crew) }}' method="POST">
         <h1>Pumps</h1>
         {{ pump_form.hidden_tag() }}
