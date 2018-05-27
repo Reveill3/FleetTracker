@@ -1,5 +1,5 @@
-{% macro render_field(field, class="") %}
-    <div class="field">
+{% macro render_field(field, class="", div_class="") %}
+    <div class="field {{ div_class }}">
         {% if field.errors %}
             {% for error in field.errors %}
                  <div class="notification error">{{ error }}</div>

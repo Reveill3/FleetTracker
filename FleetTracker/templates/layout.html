@@ -22,6 +22,15 @@
             <h1 class="title">Equipment List for {{ current_user.crew.title() }} Crew</h1>
             {% endif %}
             <nav class="main-nav">
+                <div class="search">
+                    <form action="{{ url_for('search') }}" method="POST">
+                        {% for field in search_form %}
+                        {{ render_field(field, div_class='search-text') }}
+                        {% endfor %}
+                        <button type="submit" class="button search-button">Search</button>
+                    </form>
+                </div>
+                <div class="nav">
                 <a href="{{ url_for('home') }}">Home</a>
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('logout') }}">Logout</a>
@@ -37,17 +46,19 @@
                     <a href="{{ url_for('login') }}">Login</a>
                     <a href="{{ url_for('register') }}">Register</a>
                 {% endif %}
+                </div>
             </nav>
         </header>
-    </div>
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash">{{ message }}</div>
-            {% endfor %}
+        {% for category, message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
         {% endif %}
-    {% endwith %}
+        {% endwith %}
+    </div>
+
     <div class="container">
 
 {% block content %}{% endblock %}

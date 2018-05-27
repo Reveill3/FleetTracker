@@ -9,8 +9,8 @@ import forms
 import models
 
 DEBUG = True
-PORT = 8080
-HOST = '192.168.1.74'
+PORT = 8000
+HOST = '192.168.1.210'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
@@ -109,12 +109,13 @@ def logout():
 def add():
     """validate add equipment form. renders add equipment page with form."""
     form = forms.AddForm()
+    search_form = forms.SearchForm()
     if form.validate_on_submit():
         models.Equipment.add_equipment(unitnumber=form.unitnumber.data, etype=form.type.data,
                                        crew=form.crew.data)
         flash('{} {} added.'.format(form.type.data, form.unitnumber.data))
         redirect('home')
-    return render_template('add.html', form=form, user=current_user)
+    return render_template('add.html', form=form, user=current_user, search_form=search_form)
 
 
 @app.route('/main', methods=('GET', 'POST'))
@@ -137,6 +138,7 @@ def main(crew=None):
         hydration_numbers = models.create_list(current_user.crew, 'hydration')
         float_numbers = models.create_list(current_user.crew, 'float')
     pump_form = forms.PumpForm()
+    search_form = forms.SearchForm()
     pump_form.pumps.choices = pump_numbers
     blender_form = forms.BlenderForm()
     blender_form.blenders.choices = blender_numbers
@@ -146,7 +148,7 @@ def main(crew=None):
     hydration_form.hydrations.choices = hydration_numbers
 
     return render_template('main.html', saves=get_saved_data(), pump_form=pump_form, blender_form=blender_form,
-                           float_form=float_form, hydration_form=hydration_form,
+                           search_form=search_form, float_form=float_form, hydration_form=hydration_form,
                            movement_stream=movement_stream, crew=crew)
 
 
@@ -177,7 +179,7 @@ def move_pump(crew=None):
 
     if pump_form.validate_on_submit():
         if current_user.is_admin:
-            if models.check_crew(pump_form.pumps_crew, pump_form.pumps.data):
+            if models.check_crew(pump_form.pumps_crew.data, pump_form.pumps.data):
                 flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
                 return response
             else:
@@ -209,7 +211,7 @@ def move_blender(crew=None):
 
     if blender_form.validate_on_submit():
         if current_user.is_admin:
-            if models.check_crew(blender_form.blenders_crew, blender_form.blenders.data):
+            if models.check_crew(blender_form.blenders_crew.data, blender_form.blenders.data):
                 flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
                 return response
             else:
@@ -242,7 +244,7 @@ def move_hydration(crew=None):
 
     if hydration_form.validate_on_submit():
         if current_user.is_admin:
-            if models.check_crew(hydration_form.hydrations_crew, hydration_form.hydrations.data):
+            if models.check_crew(hydration_form.hydrations_crew.data, hydration_form.hydrations.data):
                 flash('{} is already on {} crew.'.format(hydration_form.hydrations.data,
                                                          hydration_form.hydrations_crew.data))
                 return response
@@ -277,7 +279,7 @@ def move_float(crew=None):
 
     if float_form.validate_on_submit():
         if current_user.is_admin:
-            if models.check_crew(float_form.floats_crew, float_form.floats.data):
+            if models.check_crew(float_form.floats_crew.data, float_form.floats.data):
                 flash('{} is already on {} crew.'.format(float_form.floats.data,
                                                          float_form.floats_crew.data))
                 return response
@@ -297,13 +299,31 @@ def move_float(crew=None):
 @app.route('/admin', methods=["GET", "POST"])
 @login_required
 def admin():
+    search_form = forms.SearchForm()
     admin_form = forms.AdminForm()
     movement_stream = models.Movement.select().order_by(models.Movement.timestamp.desc()).limit(10)
 
     if admin_form.validate_on_submit():
         return redirect(url_for('main', crew=admin_form.crew.data))
 
-    return render_template('admin.html', admin_form=admin_form, movement_stream=movement_stream)
+    return render_template('admin.html', admin_form=admin_form, search_form=search_form,
+                           movement_stream=movement_stream)
+
+
+@app.route('/search', methods=["GET", "POST"])
+def search():
+    search_form = forms.SearchForm()
+    if current_user.is_admin:
+        response = make_response(redirect(url_for('admin')))
+    else:
+        response = make_response(redirect(url_for('main')))
+    if search_form.validate_on_submit():
+        query = models.Equipment.select().where(models.Equipment.unitnumber == search_form.search.data).get()
+        flash('{} is on {} crew'.format(search_form.search.data, query.crew))
+        return response
+    else:
+        print(search_form.search.data)
+        return response
 
 
 if __name__ == '__main__':

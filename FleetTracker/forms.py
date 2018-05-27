@@ -98,6 +98,18 @@ class AddForm(FlaskForm):
                       )
 
 
+class SearchForm(FlaskForm):
+    search = StringField('search',
+                         validators=[
+                            DataRequired(),
+                            Regexp(
+                             r'[0-9]{2}\w+-[0-9]{4,5}',
+                             message='input must be in this format: 53Q-11456'
+                            )
+                         ]
+                         )
+
+
 class PumpForm(FlaskForm):
 
     pumps = RadioField('pumps')
