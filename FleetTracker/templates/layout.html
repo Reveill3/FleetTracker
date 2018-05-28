@@ -41,10 +41,10 @@
                     {% endif %}
                     {% if current_user.is_admin %}
                     <a href="{{ url_for('add') }}">Add Equipment</a>
+                    <a href="{{ url_for('register') }}">Register</a>
                     {% endif %}
                 {% else %}
                     <a href="{{ url_for('login') }}">Login</a>
-                    <a href="{{ url_for('register') }}">Register</a>
                 {% endif %}
                 </div>
             </nav>

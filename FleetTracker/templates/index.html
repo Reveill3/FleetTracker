@@ -3,7 +3,18 @@
 {% block content %}
 <body>
 {% if current_user.is_authenticated %}
-<p>Hello, {{ current_user.username }} you are currently assigned to {{ current_user.crew.title() }} crew.</p>
+    <p>Hello, {{ current_user.username }} you are currently assigned to {{ current_user.crew.title() }} crew.</p>
+    <p>Click equipment list to see all equipment that is currently shown to be on your crew. Please make sure it matches
+    what is actually on your location. If a piece of equipment is not on your list use the search bar in top right to
+    find out which crew it is on. Contact that treater to have them send it to your crew to keep things up to date.
+    </p>
+    <h1>How to send equipment</h1>
+    <ol class="number">
+        <li>Go to equipment list by clicking link in top right</li>
+        <li>Select piece of equipment you are moving off of your location</li>
+        <li>Select crew you are sending it to. If sending to yard select yard.</li>
+        <li>Press send for that category of equipment</li>
+    </ol>
 {% else %}
 <p>Hello, Please sign in to continue.</p>
 {% endif %}

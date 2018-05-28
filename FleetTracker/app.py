@@ -10,7 +10,7 @@ import models
 
 DEBUG = True
 PORT = 8000
-HOST = '192.168.1.210'
+HOST = '192.168.1.74'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
@@ -62,7 +62,8 @@ def after_request(response):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    search_form = forms.SearchForm()
+    return render_template('index.html', search_form=search_form)
 
 
 @app.route('/register', methods=('GET', 'POST'))

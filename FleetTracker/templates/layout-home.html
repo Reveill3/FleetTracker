@@ -1,3 +1,5 @@
+{% from 'macros.html' import render_field %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,20 +17,29 @@
     <header>
         <h1 class="title">Odessa Fleet Tracker</h1>
         <nav class="main-nav">
-            <a href="{{ url_for('home') }}">Home</a>
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('logout') }}">Logout</a>
-            {% if current_user.is_admin %}
-            <a href="{{ url_for('admin') }}">Master Equipment List</a>
-            {% else %}
-            <a href="{{ url_for('main') }}">Equipment List</a>
-            {% endif %}
-            {% if current_user.is_admin %}
-            <a href="{{ url_for('add') }}">Add Equipment</a>
-            {% endif %}
-            {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('register') }}">Register</a>
+            <div class="search">
+                <form action="{{ url_for('search') }}" method="POST">
+                    {% for field in search_form %}
+                    {{ render_field(field, div_class='search-text') }}
+                    {% endfor %}
+                    <button type="submit" class="button search-button">Search</button>
+                </form>
+            </div>
+            <div class="nav">
+                <a href="{{ url_for('home') }}">Home</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('admin') }}">Master Equipment List</a>
+                {% else %}
+                <a href="{{ url_for('main') }}">Equipment List</a>
+                {% endif %}
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('add') }}">Add Equipment</a>
+                {% endif %}
+                {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            </div>
             {% endif %}
         </nav>
     </header>
@@ -40,7 +51,7 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
-    <div class="container">
+    <div class="container-home">
 
         {% block content %}{% endblock %}
     </div><!--/.container-->
