@@ -17,6 +17,7 @@
     <header>
         <h1 class="title">Odessa Fleet Tracker</h1>
         <nav class="main-nav">
+            {% if current_user.is_authenticated %}
             <div class="search">
                 <form action="{{ url_for('search') }}" method="POST">
                     {% for field in search_form %}
@@ -25,6 +26,7 @@
                     <button type="submit" class="button search-button">Search</button>
                 </form>
             </div>
+            {% endif %}
             <div class="nav">
                 <a href="{{ url_for('home') }}">Home</a>
                 {% if current_user.is_authenticated %}
@@ -56,5 +58,7 @@
         {% block content %}{% endblock %}
     </div><!--/.container-->
 </div><!--/.wrap-->
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/app.js"></script>
 </body>
 </html>

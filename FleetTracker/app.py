@@ -10,7 +10,7 @@ import models
 
 DEBUG = True
 PORT = 8000
-HOST = '192.168.1.74'
+HOST = '192.168.86.24'
 
 app = Flask(__name__)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
@@ -319,8 +319,11 @@ def search():
     else:
         response = make_response(redirect(url_for('main')))
     if search_form.validate_on_submit():
-        query = models.Equipment.select().where(models.Equipment.unitnumber == search_form.search.data).get()
-        flash('{} is on {} crew'.format(search_form.search.data, query.crew))
+        try:
+            query = models.Equipment.select().where(models.Equipment.unitnumber == search_form.search.data).get()
+            flash('{} is on {} crew'.format(search_form.search.data, query.crew))
+        except:
+            flash('{} is not in the system. If this is a mistake please inform admin.'.format(search_form.search.data))
         return response
     else:
         print(search_form.search.data)

@@ -52,7 +52,7 @@ class User(UserMixin, Model):
 
 
 class Equipment(Model):
-    unitnumber = CharField(unique=True)
+    unitnumber = CharField(unique=True, primary_key=True)
     type = CharField()
     crew = CharField()
 
