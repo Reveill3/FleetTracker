@@ -80,6 +80,7 @@ def register():
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     form = forms.LoginForm()
+    search_form = forms.SearchForm()
     if form.validate_on_submit():
         try:
             user = models.User.get(models.User.username == form.username.data)
@@ -95,7 +96,7 @@ def login():
         else:
             flash('Your username or password is incorrect', 'error')
         redirect(url_for('home'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, search_form=search_form)
 
 
 @app.route('/logout')
@@ -179,6 +180,10 @@ def move_pump(crew=None):
     pump_form.pumps.choices = pump_numbers
 
     if pump_form.validate_on_submit():
+        if request.form['button'] == 'maintenance':
+            response = make_response(redirect(url_for('maintenance', pump=pump_form.pumps.data)))
+            return response
+
         if current_user.is_admin:
             if models.check_crew(pump_form.pumps_crew.data, pump_form.pumps.data):
                 flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
@@ -326,8 +331,44 @@ def search():
             flash('{} is not in the system. If this is a mistake please inform admin.'.format(search_form.search.data))
         return response
     else:
-        print(search_form.search.data)
         return response
+
+
+@app.route('/maintenance', methods=['get', 'post'])
+@app.route('/maintenance/<pump>', methods=['get', 'post'])
+@login_required
+def maintenance(pump=None):
+    maintenance_form = forms.MaintenanceForm()
+    hole_form = forms.HoleForm()
+    search_form = forms.SearchForm()
+    parts_form_vs = forms.PartsFormVS()
+    parts_form_packing = forms.PartsFormPacking()
+    grease_form = forms.GreaseForm()
+    maintenance_stream = models.Maintenance.select().where(models.Maintenance.equipment == pump).order_by(
+                                                            models.Maintenance.timestamp.desc()).limit(10)
+    messages = []
+
+    for maint_log in maintenance_stream:
+        message = '{} did {} on {} Hole {} on {} at {}'.format(maint_log.user, maint_log.maintenance_type,
+                                                               maint_log.equipment.unitnumber, maint_log.hole,
+                                                               maint_log.timestamp.strftime('%b %d'),
+                                                               maint_log.timestamp.strftime('%H:%M'))
+        messages.append(message)
+
+    if grease_form.validate_on_submit():
+        models.Maintenance.add_maintenance(maintenance_form.maintenance_type.data, hole_form.Hole.data,
+                                           pump, parts_form_vs.suction_valves.data, parts_form_vs.suction_seats.data,
+                                           parts_form_vs.discharge_valves.data, parts_form_vs.discharge_seats.data,
+                                           parts_form_packing.five_packing.data,
+                                           parts_form_packing.four_point_five_packing.data, grease_form.grease_psi.data,
+                                           current_user.username)
+        flash('Maintenance logged for {}'.format(pump))
+        return redirect(url_for('main'))
+
+    return render_template('maintenance.html', maintenance_form=maintenance_form,
+                           hole_form=hole_form, search_form=search_form, parts_form_vs=parts_form_vs,
+                           parts_form_packing=parts_form_packing, grease_form=grease_form, pump=pump,
+                           maintenance_stream=messages)
 
 
 if __name__ == '__main__':

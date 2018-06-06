@@ -82,7 +82,36 @@ class Movement(Model):
         order_by = ('-timestamp',)
 
 
+class Maintenance(Model):
+    user = TextField()
+    maintenance_type = TextField()
+    hole = IntegerField()
+    equipment = ForeignKeyField(Equipment, related_name='maintenance')
+    timestamp = DateTimeField(default=datetime.datetime.now)
+    suction_valves = IntegerField()
+    suction_seats = IntegerField()
+    discharge_valves = IntegerField()
+    discharge_seats = IntegerField()
+    five_packing = IntegerField()
+    four_point_five_packing = IntegerField()
+    grease_pressure = IntegerField()
+
+    @classmethod
+    def add_maintenance(cls, maintenance_type, hole, equipment,
+                        suction_valves, suction_seats, discharge_valves, discharge_seats,
+                        five_packing, four_point_five_packing, grease_pressure, user):
+        with DATABASE.transaction():
+            cls.create(equipment=equipment, hole=hole, maintenance_type=maintenance_type,
+                       suction_seats=suction_seats,suction_valves=suction_valves, discharge_valves=discharge_valves,
+                       discharge_seats=discharge_seats,
+                       five_packing=five_packing, four_point_five_packing=four_point_five_packing,
+                       grease_pressure=grease_pressure, user=user)
+
+    class Meta:
+        database = DATABASE
+
+
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User, Equipment, Movement], safe=True)
+    DATABASE.create_tables([User, Equipment, Movement, Maintenance], safe=True)
     DATABASE.close()

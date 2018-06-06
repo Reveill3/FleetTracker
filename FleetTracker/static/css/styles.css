@@ -31,11 +31,14 @@ header {
     box-shadow: inset 0px -1px #00000024;
 }
 
+.nav {
+    display: block;
+}
+
 .main-nav {
     display: block;
     background: #556B2F;
     text-align: center;
-    padding-right: 10%;
 }
 
 .main-nav a:hover {
@@ -78,6 +81,8 @@ header {
 
 .stream-content {
     text-align: center;
+    list-style-type: none;
+    padding-left: 0px;
 }
 
 .stream-content li {
@@ -107,7 +112,6 @@ header {
     margin: 0 auto;
     opacity: .9;
     font-size: 25px;
-    padding-right: 15%;
 }
 
 .title-admin {
@@ -115,30 +119,19 @@ header {
     text-align: center;
 }
 
-.radio li input {
-    visibility: hidden;
+.radio {
+    list-style-type: none;
+    padding-left: 0;
 }
 
-.radio li label {
-    padding: 4px 10px;
-
+.radio li input {
+    visibility: hidden;
 }
 
 .radio li input:checked+label {
     border-color: black;
     border-width: 2px;
     border-style: solid;
-}
-
-.under-radio {
-    margin-left: 22px;
-}
-
-.container {
-    margin-top: 0;
-    padding-top: 35vh;
-    text-align: center;
-
 }
 
 .container-home {
@@ -152,12 +145,6 @@ header {
     padding-top: 10px;
 
 }
-
-.header-container {
-    position: fixed;
-    width: 100%;
-}
-
 .home {
     width: 90%;
 }
@@ -172,12 +159,6 @@ header {
     header {
         height: 100px;
         position: relative;
-    }
-    .container {
-        width: 90%;
-        max-width: 1150px;
-        margin: 0 auto;
-        padding-top: 5%;
     }
 
     .container-home {
@@ -243,10 +224,12 @@ header {
 
     .search-text {
         float: left;
+        margin-right: 10px;
     }
 
     .nav {
-        display: inline-block;
+        display: flex;
+        justify-content: flex-end;
         padding-top: 10px;
         padding-left: 10%;
         width: 100%;
@@ -263,6 +246,31 @@ header {
     .home {
         width: 100%;
     }
+
+    .maint-forms {
+        padding-top: 50px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .labeled-fields {
+        text-align: right;
+    }
+
+    .parts-num  {
+        margin: 0;
+        display: inline-block;
+        padding-left: 10px;
+        text-align: right;
+    }
+
+    .parts-label {
+        display: inline-block;
+        padding-right: 10px;
+        text-align: right;
+    }
+
 
 
 }

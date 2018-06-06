@@ -8,3 +8,17 @@
         {{ field(placeholder=field.label.text, class=class) }}
     </div>
 {% endmacro %}
+
+{% macro render_field_labels(field, class="", div_class="") %}
+<div class="field {{ div_class }}">
+    {% if field.errors %}
+    {% for error in field.errors %}
+    <div class="notification error">{{ error }}</div>
+    {% endfor %}
+    {% endif %}
+    {% if field.label.text != 'CSRF Token' %}
+    <dt class="parts-label">{{ field.label }}</dt>
+    <dd class="parts-num">{{ field(placeholder=field.label.text, class=class) }}</dd>
+    {% endif %}
+</div>
+{% endmacro %}
