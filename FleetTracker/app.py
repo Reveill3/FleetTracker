@@ -4,20 +4,44 @@ import json
 from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user,
                              login_required, current_user)
+from resources.transit import transit_api
+from flask_cors import CORS, cross_origin
 
 import forms
 import models
+import os
+import re
 
+
+THREADED = True
 DEBUG = True
 PORT = 8000
-HOST = '192.168.86.24'
+HOST = '192.168.86.26'
 
 app = Flask(__name__)
+app.register_blueprint(transit_api)
+CORS(app)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
+@app.context_processor
+def hash_processor():
+    def hashed_url(filepath):
+        directory, filename = filepath.rsplit('/')
+        name, extension = filename.rsplit(".")
+        folder = os.path.join(app.root_path, 'static', directory)
+        files = os.listdir(folder)
+        for f in files:
+            regex = name+"\.[a-z0-9]+\."+extension
+            if re.match(regex, f):
+                return os.path.join('/static', directory, f)
+        return os.path.join('/static', filepath)
+    return dict(hashed_url=hashed_url)
 
 
 def get_saved_data():
@@ -34,7 +58,8 @@ def move(equipment_field, crew_field):
         equipment_field.data).execute()
     flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
     models.Movement.create(user=g.user.id, message='{} has moved {} to {} crew'.format(
-        current_user.username, equipment_field.data, crew_field.data))
+        current_user.username, equipment_field.data, crew_field.data), inTransit=True, unitnumber=equipment_field.data,
+                           crewtransfer=crew_field.data)
 
 
 @login_manager.user_loader
@@ -383,6 +408,6 @@ if __name__ == '__main__':
         )
     except ValueError:
         pass
-    app.run(debug=DEBUG, host=HOST, port=PORT)
+    app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
 
 

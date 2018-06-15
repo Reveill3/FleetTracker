@@ -1,5 +1,4 @@
 {% from 'macros.html' import render_field %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +14,6 @@
 <body>
 <div class="wrap">
     <header>
-        <h1 class="title">Odessa Fleet Tracker</h1>
         <nav class="main-nav">
             {% if current_user.is_authenticated %}
             <div class="search">
@@ -60,5 +58,7 @@
 </div><!--/.wrap-->
     <script src="/static/js/jquery-3.3.1.min.js"></script>
     <script src="/static/js/app.js"></script>
+    <script type="text/javascript" src="{{ hashed_url('build/vendor.js') }}"></script>
+    <script type="text/javascript" src="{{ hashed_url('build/main.js') }}"></script>
 </body>
 </html>

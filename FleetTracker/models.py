@@ -75,7 +75,10 @@ class Equipment(Model):
 class Movement(Model):
     user = ForeignKeyField(User, related_name='movement')
     message = TextField()
+    inTransit = BooleanField()
     timestamp = DateTimeField(default=datetime.datetime.now)
+    unitnumber = CharField()
+    crewtransfer = CharField()
 
     class Meta:
         database = DATABASE
