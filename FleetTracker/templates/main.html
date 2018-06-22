@@ -5,7 +5,11 @@
 <div class="row mt-4">
     <div class="col-md-3 text-center">
         {% if current_user.is_admin %}
-        <form action='{{ url_for("move_pump", crew=crew) }}' method="POST">
+        {% set action = url_for("move_pump", crew=crew) %}
+        {% else %}
+        {% set action = url_for("move_pump") %}
+        {% endif %}
+        <form action='{{ action }}' method="POST" id="pump-form">
             <h1>Pumps</h1>
             {{ pump_form.hidden_tag() }}
             {% for field in pump_form %}
@@ -15,46 +19,44 @@
             {{ render_field(field, class="under-radio") }}
             {% endif %}
             {% endfor %}
-            <button type="submit" class="btn btn-dark mb-2" name="button" value="send">Send Pump</button>
+            <!-- Toggle Modal -->
+            <button type="button" class="btn btn-dark mb-2"
+                    data-toggle="modal" data-target="#pumpmodal">
+                Send Pump
+            </button>
             <button type="submit" class="btn btn-dark" name="button" value="maintenance">
                 Record/View Maintenance History
             </button>
+            <!-- Modal -->
+            <div class="modal fade" id="pumpmodal" tabindex="-1" role="dialog" aria-labelledby="pumpmodalcentertitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="pumpmodalcentertitle">Enter Supervisor Name</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input title='supervisor' type="text" name="user_name" id="user">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!-- Submit Form -->
+                            <button type="submit" class="btn btn-dark" name="button" value="send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
-        {% else %}
-        <form action='{{ url_for("move_pump") }}' method="POST">
-            <h1>Pumps</h1>
-            {{ pump_form.hidden_tag() }}
-            {% for field in pump_form %}
-            {% if field == pump_form.pumps %}
-                {{ render_field(field, class="radio") }}
-            {% else %}
-                {{ render_field(field, class="under-radio") }}
-                {% endif %}
-            {% endfor %}
-            <button type="submit" class="btn btn-dark mb-2" name="button" value="send">Send Pump</button>
-            <button type="submit" class="btn btn-dark" name="button" value="maintenance">
-                Record/View Maintenance History
-            </button>
-        </form>
-        {% endif %}
     </div>
     <div class="col-md-3 text-center">
-
         {% if current_user.is_admin %}
-        <form action='{{ url_for("move_blender", crew=crew) }}' method="POST">
-            <h1>Blenders</h1>
-            {{ blender_form.hidden_tag() }}
-            {% for field in blender_form %}
-            {% if field == blender_form.blenders %}
-                {{ render_field(field, class="radio") }}
-            {% else %}
-                {{ render_field(field, class="under-radio") }}
-            {% endif %}
-            {% endfor %}
-            <button type="submit" class="btn btn-dark">Send Blender</button>
-        </form>
+        {% set action = url_for("move_blender", crew=crew) %}
         {% else %}
-        <form action="{{ url_for('move_blender') }}" method="POST">
+        {% set action = url_for('move_blender') %}
+        {% endif %}
+        <form action='{{ action }}' method="POST">
             <h1>Blenders</h1>
             {{ blender_form.hidden_tag() }}
             {% for field in blender_form %}
@@ -64,26 +66,41 @@
                 {{ render_field(field, class="under-radio") }}
             {% endif %}
             {% endfor %}
-            <button type="submit" class="btn btn-dark">Send Blender</button>
+            <!-- Toggle Modal -->
+            <button type="button" class="btn btn-dark mb-2"
+                    data-toggle="modal" data-target="#blenderModalCenter">
+                Send Blender
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="blenderModalCenter" tabindex="-1" role="dialog" aria-labelledby="blenderModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="blenderModalCenterTitle">Enter Supervisor Name</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input title='supervisor' type="text" name="user_name">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!-- Submit Form -->
+                            <button type="submit" class="btn btn-dark" name="button" value="send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
-        {% endif %}
     </div>
     <div class="col-md-3 text-center" >
         {% if current_user.is_admin %}
-        <form action='{{ url_for("move_hydration", crew=crew) }}' method="POST">
-            <h1>Hydrations</h1>
-            {{ hydration_form.hidden_tag() }}
-            {% for field in hydration_form %}
-            {% if field == hydration_form.hydrations %}
-            {{ render_field(field, class="radio") }}
-            {% else %}
-            {{ render_field(field, class="under-radio") }}
-            {% endif %}
-            {% endfor %}
-            <button type="submit" class="btn btn-dark">Send Hydration</button>
-        </form>
+        {% set action = url_for("move_hydration", crew=crew) %}
         {% else %}
-        <form action='{{ url_for("move_hydration") }}' method="POST">
+        {% set action = url_for('move_hydration') %}
+        {% endif %}
+        <form action='{{ action }}' method="POST">
             <h1>Hydrations</h1>
             {{ hydration_form.hidden_tag() }}
             {% for field in hydration_form %}
@@ -93,39 +110,77 @@
             {{ render_field(field, class="under-radio") }}
             {% endif %}
             {% endfor %}
-            <button type="submit" class="btn btn-dark">Send Hydration</button>
+            <!-- Toggle Modal -->
+            <button type="button" class="btn btn-dark mb-2"
+                    data-toggle="modal" data-target="#hydrationModalCenter">
+                Send Hydration
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="hydrationModalCenter" tabindex="-1" role="dialog" aria-labelledby="hydrationModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="hydrationModalCenterTitle">Enter Supervisor Name</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input title='supervisor' type="text" name="user_name">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!-- Submit Form -->
+                            <button type="submit" class="btn btn-dark" name="button" value="send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
-        {% endif %}
     </div>
     <div class="col-md-3 text-center">
-    {% if current_user.is_admin %}
-    <form action='{{ url_for("move_float", crew=crew) }}' method="POST">
-        <h1>Floats</h1>
-        {{ float_form.hidden_tag() }}
-        {% for field in float_form %}
-        {% if field == float_form.floats %}
-        {{ render_field(field, class="radio") }}
+        {% if current_user.is_admin %}
+        {% set action = url_for("move_float", crew=crew) %}
         {% else %}
-        {{ render_field(field, class="under-radio") }}
+        {% set action = url_for('move_float') %}
         {% endif %}
-        {% endfor %}
-        <button type="submit" class="btn btn-dark">Send Float</button>
-    </form>
-    {% else %}
-
-    <form action='{{ url_for("move_float") }}' method="POST">
-        <h1>Floats</h1>
-        {{ float_form.hidden_tag() }}
-        {% for field in float_form %}
-        {% if field == float_form.floats %}
-        {{ render_field(field, class="radio") }}
-        {% else %}
-        {{ render_field(field, class="under-radio") }}
-        {% endif %}
-        {% endfor %}
-        <button type="submit" class="btn btn-dark">Send Float</button>
-    </form>
-    {% endif %}
+        <form action='{{ action }}' method="POST">
+            <h1>Floats</h1>
+            {{ float_form.hidden_tag() }}
+            {% for field in float_form %}
+            {% if field == float_form.floats %}
+            {{ render_field(field, class="radio") }}
+            {% else %}
+            {{ render_field(field, class="under-radio") }}
+            {% endif %}
+            {% endfor %}
+            <!-- Toggle Modal -->
+            <button type="button" class="btn btn-dark mb-2"
+                    data-toggle="modal" data-target="#floatModalCenter">
+                Send Float
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="floatModalCenter" tabindex="-1" role="dialog" aria-labelledby="floatModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="floatModalCenterTitle">Enter Supervisor Name</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input title='supervisor' type="text" name="user_name">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!-- Submit Form -->
+                            <button type="submit" class="btn btn-dark" name="button" value="send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 <div id="transit"></div>

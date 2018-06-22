@@ -73,7 +73,7 @@ class Equipment(Model):
 
 
 class Movement(Model):
-    user = ForeignKeyField(User, related_name='movement')
+    user = TextField()
     message = TextField()
     inTransit = BooleanField()
     timestamp = DateTimeField(default=datetime.datetime.now)

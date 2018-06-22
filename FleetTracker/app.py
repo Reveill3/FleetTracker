@@ -31,6 +31,7 @@ login_manager.login_view = 'login'
 
 @app.context_processor
 def hash_processor():
+    """Converts hashed JS files from Webpack build step back to normal"""
     def hashed_url(filepath):
         directory, filename = filepath.rsplit('/')
         name, extension = filename.rsplit(".")
@@ -52,13 +53,15 @@ def get_saved_data():
     return data
 
 
-def move(equipment_field, crew_field):
+def move(equipment_field, crew_field, supervisor):
+    """Moves a piece of equipment to specified crew in database.
+    Changes 'crew' column in database to specified field"""
     models.Equipment.update(crew=crew_field.data).where(
         models.Equipment.unitnumber ==
         equipment_field.data).execute()
     flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
-    models.Movement.create(user=g.user.id, message='{} has moved {} to {} crew'.format(
-        current_user.username, equipment_field.data, crew_field.data), inTransit=True, unitnumber=equipment_field.data,
+    models.Movement.create(user=supervisor, message='{} has moved {} to {} crew'.format(
+        supervisor, equipment_field.data, crew_field.data), inTransit=True, unitnumber=equipment_field.data,
                            crewtransfer=crew_field.data)
 
 
@@ -149,6 +152,7 @@ def add():
 @app.route('/main/<crew>', methods=('GET', 'POST'))
 @login_required
 def main(crew=None):
+    """Builds initial main template. Buttons go to different routes that perform actions and redirect back to here."""
     response = make_response(redirect(url_for('main')))
     data = get_saved_data()
     data.update(dict(request.form.items()))
@@ -192,6 +196,7 @@ def save():
 @app.route('/move_pump/<crew>', methods=('GET', 'POST'))
 @login_required
 def move_pump(crew=None):
+    """Action route from button on main page. Initiates moving equipment to selected crew in dropdown."""
     if crew is not None and current_user.is_admin:
         pump_numbers = models.create_list(crew, 'pump')
         response = make_response(redirect(url_for('admin')))
@@ -203,31 +208,35 @@ def move_pump(crew=None):
     response.set_cookie('user_input', json.dumps(data))
     pump_form = forms.PumpForm()
     pump_form.pumps.choices = pump_numbers
-
+    treater_name = request.form.get('user_name')
     if pump_form.validate_on_submit():
         if request.form['button'] == 'maintenance':
             response = make_response(redirect(url_for('maintenance', pump=pump_form.pumps.data)))
             return response
-
         if current_user.is_admin:
             if models.check_crew(pump_form.pumps_crew.data, pump_form.pumps.data):
                 flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
                 return response
             else:
-                move(pump_form.pumps, pump_form.pumps_crew)
+                move(pump_form.pumps, pump_form.pumps_crew, treater_name)
                 return response
         elif pump_form.pumps_crew.data == current_user.crew:
             flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
             return response
         else:
-            move(pump_form.pumps, pump_form.pumps_crew)
+            move(pump_form.pumps, pump_form.pumps_crew, treater_name)
             return response
+    else:
+        response = redirect(url_for('main'))
+        flash('Please Select a Pump')
+        return response
 
 
 @app.route('/move_blender', methods=['POST', 'GET'])
 @app.route('/move_blender/<crew>', methods=['POST', 'GET'])
 @login_required
 def move_blender(crew=None):
+    """Action route from button on main page. Initiates moving equipment to selected crew in dropdown."""
     if crew is not None and current_user.is_admin:
         blender_numbers = models.create_list(crew, 'blender')
         response = make_response(redirect(url_for('admin')))
@@ -239,28 +248,32 @@ def move_blender(crew=None):
     response.set_cookie('user_input', json.dumps(data))
     blender_form = forms.BlenderForm()
     blender_form.blenders.choices = blender_numbers
-
+    treater_name = request.form.get('user_name')
     if blender_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(blender_form.blenders_crew.data, blender_form.blenders.data):
                 flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
                 return response
             else:
-                move(blender_form.blenders, blender_form.blenders_crew)
+                move(blender_form.blenders, blender_form.blenders_crew, treater_name)
                 return response
 
         elif blender_form.blenders_crew.data == current_user.crew:
             flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
             return response
         else:
-            move(blender_form.blenders, blender_form.blenders_crew)
+            move(blender_form.blenders, blender_form.blenders_crew, treater_name)
             return response
+    else:
+        response = redirect(url_for('main'))
+        return response
 
 
 @app.route('/move_hydration', methods=['POST', 'GET'])
 @app.route('/move_hydration/<crew>', methods=['POST', 'GET'])
 @login_required
 def move_hydration(crew=None):
+    """Action route from button on main page. Initiates moving equipment to selected crew in dropdown."""
     if crew is not None and current_user.is_admin:
         hydration_numbers = models.create_list(crew, 'hydration')
         response = make_response(redirect(url_for('admin')))
@@ -272,7 +285,7 @@ def move_hydration(crew=None):
     response.set_cookie('user_input', json.dumps(data))
     hydration_form = forms.HydrationForm()
     hydration_form.hydrations.choices = hydration_numbers
-
+    treater_name = request.form.get('user_name')
     if hydration_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(hydration_form.hydrations_crew.data, hydration_form.hydrations.data):
@@ -280,7 +293,7 @@ def move_hydration(crew=None):
                                                          hydration_form.hydrations_crew.data))
                 return response
             else:
-                move(hydration_form.hydrations, hydration_form.hydrations_crew)
+                move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name)
                 return response
 
         elif hydration_form.hydrations_crew.data == current_user.crew:
@@ -288,14 +301,18 @@ def move_hydration(crew=None):
                                                      hydration_form.hydrations_crew.data))
             return response
         else:
-            move(hydration_form.hydrations, hydration_form.hydrations_crew)
+            move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name)
             return response
+    else:
+        response = redirect(url_for('main'))
+        return response
 
 
 @app.route('/move_float', methods=['POST', 'GET'])
 @app.route('/move_float/<crew>', methods=['POST', 'GET'])
 @login_required
 def move_float(crew=None):
+    """Action route from button on main page. Initiates moving equipment to selected crew in dropdown."""
     if crew is not None and current_user.is_admin:
         float_numbers = models.create_list(crew, 'float')
         response = make_response(redirect(url_for('admin')))
@@ -307,7 +324,7 @@ def move_float(crew=None):
     response.set_cookie('user_input', json.dumps(data))
     float_form = forms.FloatForm()
     float_form.floats.choices = float_numbers
-
+    treater_name = request.form.get('user_name')
     if float_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(float_form.floats_crew.data, float_form.floats.data):
@@ -315,7 +332,7 @@ def move_float(crew=None):
                                                          float_form.floats_crew.data))
                 return response
             else:
-                move(float_form.floats, float_form.floats_crew)
+                move(float_form.floats, float_form.floats_crew, treater_name)
                 return response
 
         elif float_form.floats_crew.data == current_user.crew:
@@ -323,8 +340,12 @@ def move_float(crew=None):
                                                      float_form.floats_crew.data))
             return response
         else:
-            move(float_form.floats, float_form.floats_crew)
+            move(float_form.floats, float_form.floats_crew, treater_name)
             return response
+
+    else:
+        response = redirect(url_for('main'))
+        return response
 
 
 @app.route('/admin', methods=["GET", "POST"])
@@ -343,6 +364,7 @@ def admin():
 
 @app.route('/search', methods=["GET", "POST"])
 def search():
+    """Action for clicking search button in top right. Looks for crew of a piece of equipment and flashes to page. """
     search_form = forms.SearchForm()
     if current_user.is_admin:
         response = make_response(redirect(url_for('admin')))
@@ -363,6 +385,7 @@ def search():
 @app.route('/maintenance/<pump>', methods=['get', 'post'])
 @login_required
 def maintenance(pump=None):
+    """Logs maintenance into database"""
     maintenance_form = forms.MaintenanceForm()
     hole_form = forms.HoleForm()
     search_form = forms.SearchForm()
