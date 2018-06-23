@@ -6,7 +6,7 @@ from wtforms import ValidationError
 from models import User, Equipment
 from flask_login import current_user
 
-crews = [('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'), ('onyx', 'Onyx'),
+crews = [('yard', 'Yard'), ('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'), ('onyx', 'Onyx'),
          ('purple', 'Purple'), ('silver', 'Silver'), ('gold', 'Gold')]
 
 

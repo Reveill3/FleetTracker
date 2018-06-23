@@ -3,7 +3,7 @@ import {ListGroupItem, ListGroupItemText, ListGroupItemHeading, Button} from 're
 import PropTypes from 'prop-types';
 
 const Equipment = props => {
-  if (props.transitequipment) { return (
+  if (props.transitequipment !== []) { return (
     props.transitequipment.map((equipment, index) =>
       <div key={index}>
         <ListGroupItem id='transit-row' className='row'>
@@ -11,9 +11,11 @@ const Equipment = props => {
             <ListGroupItemHeading className='d-inline-block'>{equipment.unitnumber}</ListGroupItemHeading>
             <ListGroupItemText>{equipment.message}</ListGroupItemText>
           </div>
-          <Button color={equipment.isCancelled ? 'warning' : 'danger'}
-                  className='col' onClick={() => props.cancelClick(index)}>
-            {equipment.isCancelled ? 'Cancel Pending  Click Submit To Commit' : 'Cancel'}
+          <Button color={(equipment.yours && equipment.isCancelled) ? 'warning':
+            (equipment.isCancelled) ? 'success' : 'danger'}
+                  className='col' onClick={() => props.cancelClick( index )}>
+            {(equipment.yours && equipment.isCancelled) ?  'Press Submit to Cancel' :
+              (equipment.isCancelled) ? 'Press Submit to Receive Equipment' :'Cancel'}
           </Button>
         </ListGroupItem>
       </div>
@@ -27,7 +29,7 @@ const Equipment = props => {
 
 Equipment.propTypes = {
   transitequipment: PropTypes.array.isRequired,
-  cancelClick: PropTypes.func.isRequired
+  cancelClick: PropTypes.func.isRequired,
 };
 
 export default Equipment;

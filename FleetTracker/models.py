@@ -77,8 +77,9 @@ class Movement(Model):
     message = TextField()
     inTransit = BooleanField()
     timestamp = DateTimeField(default=datetime.datetime.now)
-    unitnumber = CharField()
-    crewtransfer = CharField()
+    unit_number = CharField()
+    crew_transfer = CharField()
+    crew_from = CharField()
 
     class Meta:
         database = DATABASE

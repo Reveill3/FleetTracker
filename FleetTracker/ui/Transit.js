@@ -3,11 +3,13 @@ import {ListGroup} from 'reactstrap';
 import Equipment from './Equipment';
 
 class Transit extends Component {
-
-  state = {
-    pending: false,
-    pumps: []
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      pending: false,
+      pumps: []
+    };
+  }
 
   handleCancelClick = (index) => {
     this.setState((prevState) =>
@@ -21,40 +23,80 @@ class Transit extends Component {
     )};
 
 
-  checkstate = () => console.log(this.state, this.state.pumps.every((equipment) => !equipment.isCancelled));
+  populate_transit = () => {
+    fetch('http://192.168.86.26:8000/api/v1/transit_list', {mode: 'cors'})
+      .then(response => response.json())
+      .then(MyJson => {
+        let pumpArray = [];
+        MyJson.map((entry) =>{
+          if ([entry.transferfrom, entry.transferto].some((condition) =>
+          document.getElementsByClassName('title')[0].innerText.toLowerCase()
+            .includes(condition)))
+         {
+          pumpArray.push(
+            {
+              unitnumber: entry.unitnumber,
+              id: entry.id,
+              message: entry.unitnumber + ' in transit to ' + entry.transferto,
+              isCancelled: false,
+              transferTo: entry.transferto,
+              transferFrom: entry.transferfrom,
+              yours: document.getElementsByClassName('title')[0].innerText.toLowerCase()
+                .includes(entry.transferfrom)
+            });
+          console.log(pumpArray)
+        }
+      });
+        this.setState(
+          {
+            pending: false,
+            pumps: pumpArray
+          }
+        )
+        }
+      );
+
+  };
 
 
-  canceltransit = () => {};
+  cancelTransit = () => {
+    let cancelled = this.state.pumps.filter((movement) => movement.isCancelled);
+    let cancelledId = cancelled.map((object) => {
+      return {
+        id: object.id,
+        transferfrom: object.transferFrom,
+        transferTo: object.transferTo,
+        yours: object.yours
+      }
+
+    });
+    fetch('http://192.168.86.26:8000/api/v1/transit_list/', {
+      method:'POST',
+      mode: 'cors',
+      body: JSON.stringify(cancelledId),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+        }
+      ).then( () => this.populate_transit());
+
+  };
 
   retrieveInTransit = () => {
     if (this.state.pending) {
-      this.canceltransit();
-    } else {
-      fetch('http://192.168.86.26:8000/api/v1/transit_list', {mode: 'cors'})
-        .then(response => response.json())
-        .then(MyJson => MyJson.map((entry, index) =>
-          this.pumparray.push(
-            {
-              unitnumber: entry.unitnumber,
-              id: index,
-              message: entry.unitnumber + ' was moved to ' + entry.transferto,
-              isCancelled: false
-            })));
-      this.setState({
-        ...this.state,
-        pumps: this.pumparray
-      });
-      this.pumparray = [];
-    }};
-
+    this.cancelTransit() } else {
+      this.populate_transit()
+    }
+  };
 
 
   render() {
     return (
       <ListGroup>
+        <h1 className='border-bottom'>In Transit</h1>
         <Equipment transitequipment={this.state.pumps} cancelClick={this.handleCancelClick}/>
         <button className='btn btn-dark' onClick={this.retrieveInTransit}>
-          {this.state.pending ? 'Submit Cancellations': 'Refresh'}
+          {this.state.pending ? 'Submit': 'Refresh'}
         </button>
       </ListGroup>
     );

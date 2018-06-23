@@ -183,13 +183,15 @@
         </form>
     </div>
 </div>
-<div id="transit"></div>
-<article class="mt-4">
-    <h1 class="stream">Recent Equipment Movement</h1>
-    <ol class="stream-content">
-        {% for movement in movement_stream %}
-        <li class="list-group-item">{{ movement.message }}</li>
-        {% endfor %}
-    </ol>
-</article>
+<div class="row">
+    <article class="mt-4 col-md">
+        <h1 class="border-bottom">Recent Movement</h1>
+        <ol class="stream-content">
+            {% for movement in movement_stream %}
+            <li class="list-group-item">{{ movement.message }}</li>
+            {% endfor %}
+        </ol>
+    </article>
+    <div id="transit" class="col-md mt-4"></div>
+</div>
 {% endblock %}

@@ -56,13 +56,13 @@ def get_saved_data():
 def move(equipment_field, crew_field, supervisor):
     """Moves a piece of equipment to specified crew in database.
     Changes 'crew' column in database to specified field"""
-    models.Equipment.update(crew=crew_field.data).where(
+    models.Equipment.update(crew='pending').where(
         models.Equipment.unitnumber ==
         equipment_field.data).execute()
     flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
     models.Movement.create(user=supervisor, message='{} has moved {} to {} crew'.format(
-        supervisor, equipment_field.data, crew_field.data), inTransit=True, unitnumber=equipment_field.data,
-                           crewtransfer=crew_field.data)
+        supervisor, equipment_field.data, crew_field.data), inTransit=True, unit_number=equipment_field.data,
+                           crew_transfer=crew_field.data, crew_from=current_user.crew)
 
 
 @login_manager.user_loader
