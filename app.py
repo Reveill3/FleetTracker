@@ -16,7 +16,7 @@ import re
 THREADED = True
 DEBUG = True
 PORT = 8000
-HOST = 'odessafleettracker.herokuapp.com'
+HOST = '10.105.160.20'
 
 app = Flask(__name__)
 app.register_blueprint(transit_api)
@@ -436,4 +436,4 @@ if __name__ == '__main__':
         )
     except ValueError:
         pass
-    app.run(debug=False)
+    app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)

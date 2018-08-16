@@ -10,6 +10,7 @@ Flask-Login==0.4.1
 Flask-RESTful==0.3.6
 Flask-SocketIO==2.9.6
 Flask-WTF==0.14.2
+gunicorn==19.9.0
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
