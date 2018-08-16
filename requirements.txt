@@ -15,6 +15,7 @@ itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
 peewee==3.3.4
+psycopg2==2.7.5
 pycparser==2.18
 python-engineio==2.0.4
 python-socketio==1.9.0
