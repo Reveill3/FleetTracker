@@ -24,7 +24,7 @@ class Transit extends Component {
 
 
   populate_transit = () => {
-    fetch('http://10.105.160.20:8000/api/v1/transit_list', {mode: 'cors'})
+    fetch('http://odessafleettracker.herokuapp.com/api/v1/transit_list', {mode: 'cors'})
       .then(response => response.json())
       .then(MyJson => {
         let pumpArray = [];
@@ -70,7 +70,7 @@ class Transit extends Component {
       }
 
     });
-    fetch('http://10.105.160.20:8000/api/v1/transit_list/', {
+    fetch('http://odessafleettracker.herokuapp.com/api/v1/transit_list/', {
       method:'POST',
       mode: 'cors',
       body: JSON.stringify(cancelledId),
