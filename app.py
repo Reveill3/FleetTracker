@@ -436,4 +436,5 @@ try:
     )
 except ValueError:
     pass
+models.DATABASE.close()
 # app.run(debug=False)
