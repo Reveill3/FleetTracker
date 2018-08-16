@@ -16,7 +16,7 @@ import re
 THREADED = True
 DEBUG = True
 PORT = 8000
-HOST = '192.168.86.26'
+HOST = '10.105.160.20'
 
 app = Flask(__name__)
 app.register_blueprint(transit_api)
