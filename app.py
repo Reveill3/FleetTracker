@@ -424,16 +424,15 @@ def maintenance(pump=None):
                            maintenance_stream=messages)
 
 
-if __name__ == '__main__':
-    models.initialize()
-    try:
-        models.User.create_user(
-            username='alester',
-            email='austin.lester@ftsi.com',
-            password='password',
-            admin=True,
-            crew='red'
-        )
-    except ValueError:
-        pass
-    app.run(debug=False)
+models.initialize()
+try:
+    models.User.create_user(
+        username='alester',
+        email='austin.lester@ftsi.com',
+        password='password',
+        admin=True,
+        crew='red'
+    )
+except ValueError:
+    pass
+app.run(debug=False)
