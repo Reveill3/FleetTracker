@@ -4,8 +4,13 @@ from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin
 from peewee import *
 
-DATABASE = PostgresqlDatabase('postgresql-animate-35273', user='yzpybctnlcwbum', password='56a30895a701d58c57572c1e74ed59cc08066ccffe3ebe67563c46e3c6745a2e',
-                              host='ec2-54-163-246-5.compute-1.amazonaws.com', port=5432)
+DATABASE = PostgresqlDatabase(
+    'd6dtgpvg8ivgof',
+    user='yzpybctnlcwbum',
+    password='56a30895a701d58c57572c1e74ed59cc08066ccffe3ebe67563c46e3c6745a2e',
+    host='ec2-54-163-246-5.compute-1.amazonaws.com',
+    port=5432
+)
 
 
 def check_crew(crew, unit_number):
