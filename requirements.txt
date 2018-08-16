@@ -1,7 +1,6 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: win-64
-bcrypt=3.1.4=py36ha9ddb7d_0
 certifi=2018.4.16=py36_0
 cffi=1.11.5=py36h945400d_0
 click=6.7=py36hec8c647_0
