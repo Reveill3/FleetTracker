@@ -4,7 +4,8 @@ from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin
 from peewee import *
 
-DATABASE = SqliteDatabase('Fleet.db')
+DATABASE = PostgresqlDatabase('odessafleettracker', user='yzpybctnlcwbum', password='56a30895a701d58c57572c1e74ed59cc08066ccffe3ebe67563c46e3c6745a2e',
+                              host='ec2-54-163-246-5.compute-1.amazonaws.com', port=5432)
 
 
 def check_crew(crew, unit_number):
@@ -106,7 +107,7 @@ class Maintenance(Model):
                         five_packing, four_point_five_packing, grease_pressure, user):
         with DATABASE.transaction():
             cls.create(equipment=equipment, hole=hole, maintenance_type=maintenance_type,
-                       suction_seats=suction_seats,suction_valves=suction_valves, discharge_valves=discharge_valves,
+                       suction_seats=suction_seats, suction_valves=suction_valves, discharge_valves=discharge_valves,
                        discharge_seats=discharge_seats,
                        five_packing=five_packing, four_point_five_packing=four_point_five_packing,
                        grease_pressure=grease_pressure, user=user)
