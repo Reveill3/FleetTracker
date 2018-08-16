@@ -1,1 +1,1 @@
-web: gunicorn app:odessafleettracker
+web: gunicorn app:app
