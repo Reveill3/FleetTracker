@@ -436,4 +436,4 @@ if __name__ == '__main__':
         )
     except ValueError:
         pass
-    app.run(threaded=THREADED, debug=DEBUG, host=HOST)
+    app.run(debug=False)
