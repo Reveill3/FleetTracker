@@ -84,6 +84,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     """Close the database connection after each request."""
+    g.db = models.DATABASE
     g.db.close()
     return response
 

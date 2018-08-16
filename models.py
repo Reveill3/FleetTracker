@@ -122,6 +122,6 @@ class Maintenance(Model):
 
 
 def initialize():
-    DATABASE.get_conn()
+    DATABASE.connect()
     DATABASE.create_tables([User, Equipment, Movement, Maintenance], safe=True)
     DATABASE.close()
