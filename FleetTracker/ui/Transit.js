@@ -42,7 +42,8 @@ class Transit extends Component {
               transferTo: entry.transferto,
               transferFrom: entry.transferfrom,
               yours: document.getElementsByClassName('title')[0].innerText.toLowerCase()
-                .includes(entry.transferfrom)
+                .includes(entry.transferfrom),
+              details: entry.details
             });
           console.log(pumpArray)
         }
@@ -78,7 +79,7 @@ class Transit extends Component {
         'Content-Type': 'application/json'
       }
         }
-      ).then( () => this.populate_transit());
+      ).then( () => this.populate_transit()).then(window.location.reload());
 
   };
 

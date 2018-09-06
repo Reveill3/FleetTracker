@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="row mt-4">
-    <div class="col-md-3 text-center">
+    <div class="col-md-2 text-center">
         {% if current_user.is_admin %}
         {% set action = url_for("move_pump", crew=crew) %}
         {% else %}
@@ -21,25 +21,29 @@
             {% endfor %}
             <!-- Toggle Modal -->
             <button type="button" class="btn btn-dark mb-2"
-                    data-toggle="modal" data-target="#pumpmodal">
+                    data-toggle="modal" data-target="#pumpModalCenter">
                 Send Pump
             </button>
             <button type="submit" class="btn btn-dark" name="button" value="maintenance">
                 Record/View Maintenance History
             </button>
             <!-- Modal -->
-            <div class="modal fade" id="pumpmodal" tabindex="-1" role="dialog" aria-labelledby="pumpmodalcentertitle" aria-hidden="true">
+            <div class="modal fade" id="pumpModalCenter" tabindex="-1" role="dialog" aria-labelledby="pumpModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="pumpmodalcentertitle">Enter Supervisor Name</h5>
+                            <h5 class="modal-title" id="pumpModalCenterTitle">Equipment Movement Details</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <input title='supervisor' type="text" name="user_name" id="user">
+                            <h5 class="modal-title" id="pumpModalCenterMessage">Supervisor Name</h5>
+                            <input title='supervisor' type="text" name="user_name">
+                            <h5 class="modal-title" id="pumpModalCenterMessage">Why are you sending it?</h5>
+                            <input title='message' type="text" name="user_message">
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <!-- Submit Form -->
@@ -50,7 +54,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-3 text-center">
+    <div class="col-md-2 text-center">
         {% if current_user.is_admin %}
         {% set action = url_for("move_blender", crew=crew) %}
         {% else %}
@@ -76,14 +80,18 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="blenderModalCenterTitle">Enter Supervisor Name</h5>
+                            <h5 class="modal-title" id="blenderModalCenterTitle">Equipment Movement Details</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
+                            <h5 class="modal-title" id="blenderModalCenterMessage">Supervisor Name</h5>
                             <input title='supervisor' type="text" name="user_name">
+                            <h5 class="modal-title" id="blenderModalCenterMessage">Why are you sending it?</h5>
+                            <input title='message' type="text" name="user_message">
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <!-- Submit Form -->
@@ -94,7 +102,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-3 text-center" >
+    <div class="col-md-2 text-center" >
         {% if current_user.is_admin %}
         {% set action = url_for("move_hydration", crew=crew) %}
         {% else %}
@@ -120,14 +128,18 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="hydrationModalCenterTitle">Enter Supervisor Name</h5>
+                            <h5 class="modal-title" id="hydrationModalCenterTitle">Equipment Movement Details</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
+                            <h5 class="modal-title" id="hydrationModalCenterMessage">Supervisor Name</h5>
                             <input title='supervisor' type="text" name="user_name">
+                            <h5 class="modal-title" id="hydrationModalCenterMessage">Why are you sending it?</h5>
+                            <input title='message' type="text" name="user_message">
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <!-- Submit Form -->
@@ -138,7 +150,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-3 text-center">
+    <div class="col-md-2 text-center">
         {% if current_user.is_admin %}
         {% set action = url_for("move_float", crew=crew) %}
         {% else %}
@@ -164,14 +176,66 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="floatModalCenterTitle">Enter Supervisor Name</h5>
+                            <h5 class="modal-title" id="floatModalCenterTitle">Equipment Movement Details</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
+                            <h5 class="modal-title" id="floatModalCenterMessage">Supervisor Name</h5>
                             <input title='supervisor' type="text" name="user_name">
+                            <h5 class="modal-title" id="floatModalCenterMessage">Why are you sending it?</h5>
+                            <input title='message' type="text" name="user_message">
                         </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <!-- Submit Form -->
+                            <button type="submit" class="btn btn-dark" name="button" value="send">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-2 text-center">
+        {% if current_user.is_admin %}
+        {% set action = url_for("move_missile", crew=crew) %}
+        {% else %}
+        {% set action = url_for('move_missile') %}
+        {% endif %}
+        <form action='{{ action }}' method="POST">
+            <h1>Missiles</h1>
+            {{ missile_form.hidden_tag() }}
+            {% for field in missile_form %}
+            {% if field == missile_form.missiles %}
+            {{ render_field(field, class="radio") }}
+            {% else %}
+            {{ render_field(field, class="under-radio") }}
+            {% endif %}
+            {% endfor %}
+            <!-- Toggle Modal -->
+            <button type="button" class="btn btn-dark mb-2"
+                    data-toggle="modal" data-target="#missileModalCenter">
+                Send Missile
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="missileModalCenter" tabindex="-1" role="dialog" aria-labelledby="missileModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="missileModalCenterTitle">Equipment Movement Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h5 class="modal-title" id="missileModalCenterMessage">Supervisor Name</h5>
+                            <input title='supervisor' type="text" name="user_name">
+                            <h5 class="modal-title" id="missileModalCenterMessage">Why are you sending it?</h5>
+                            <input title='message' type="text" name="user_message">
+                        </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <!-- Submit Form -->
@@ -188,7 +252,14 @@
         <h1 class="border-bottom">Recent Movement</h1>
         <ol class="stream-content">
             {% for movement in movement_stream %}
-            <li class="list-group-item">{{ movement.message }}</li>
+            <li class="list-group-item">
+              <h5>
+                {{ movement.message }}
+              </h5>
+              <div>
+                Reason: {{ movement.details }}
+              </div>
+            </li>
             {% endfor %}
         </ol>
     </article>

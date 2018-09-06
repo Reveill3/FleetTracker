@@ -53,7 +53,7 @@ def get_saved_data():
     return data
 
 
-def move(equipment_field, crew_field, supervisor):
+def move(equipment_field, crew_field, supervisor, message):
     """Moves a piece of equipment to specified crew in database.
     Changes 'crew' column in database to specified field"""
     models.Equipment.update(crew='pending').where(
@@ -62,7 +62,7 @@ def move(equipment_field, crew_field, supervisor):
     flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
     models.Movement.create(user=supervisor, message='{} has moved {} to {} crew'.format(
         supervisor, equipment_field.data, crew_field.data), inTransit=True, unit_number=equipment_field.data,
-                           crew_transfer=crew_field.data, crew_from=current_user.crew)
+                           crew_transfer=crew_field.data, crew_from=current_user.crew, details=message)
 
 
 @login_manager.user_loader
@@ -163,11 +163,13 @@ def main(crew=None):
         blender_numbers = models.create_list(crew, 'blender')
         hydration_numbers = models.create_list(crew, 'hydration')
         float_numbers = models.create_list(crew, 'float')
+        missile_numbers = models.create_list(crew, 'missile')
     else:
         pump_numbers = models.create_list(current_user.crew, 'pump')
         blender_numbers = models.create_list(current_user.crew, 'blender')
         hydration_numbers = models.create_list(current_user.crew, 'hydration')
         float_numbers = models.create_list(current_user.crew, 'float')
+        missile_numbers = models.create_list(current_user.crew, 'missile')
     pump_form = forms.PumpForm()
     search_form = forms.SearchForm()
     pump_form.pumps.choices = pump_numbers
@@ -177,9 +179,11 @@ def main(crew=None):
     float_form.floats.choices = float_numbers
     hydration_form = forms.HydrationForm()
     hydration_form.hydrations.choices = hydration_numbers
+    missile_form = forms.MissileForm()
+    missile_form.missiles.choices = missile_numbers
 
     return render_template('main.html', saves=get_saved_data(), pump_form=pump_form, blender_form=blender_form,
-                           search_form=search_form, float_form=float_form, hydration_form=hydration_form,
+                           search_form=search_form, float_form=float_form, hydration_form=hydration_form, missile_form=missile_form,
                            movement_stream=movement_stream, crew=crew)
 
 
@@ -209,6 +213,7 @@ def move_pump(crew=None):
     pump_form = forms.PumpForm()
     pump_form.pumps.choices = pump_numbers
     treater_name = request.form.get('user_name')
+    movement_message = request.form.get('user_message')
     if pump_form.validate_on_submit():
         if request.form['button'] == 'maintenance':
             response = make_response(redirect(url_for('maintenance', pump=pump_form.pumps.data)))
@@ -218,13 +223,13 @@ def move_pump(crew=None):
                 flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
                 return response
             else:
-                move(pump_form.pumps, pump_form.pumps_crew, treater_name)
+                move(pump_form.pumps, pump_form.pumps_crew, treater_name, movement_message)
                 return response
         elif pump_form.pumps_crew.data == current_user.crew:
             flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
             return response
         else:
-            move(pump_form.pumps, pump_form.pumps_crew, treater_name)
+            move(pump_form.pumps, pump_form.pumps_crew, treater_name, movement_message)
             return response
     else:
         response = redirect(url_for('main'))
@@ -249,20 +254,58 @@ def move_blender(crew=None):
     blender_form = forms.BlenderForm()
     blender_form.blenders.choices = blender_numbers
     treater_name = request.form.get('user_name')
+    movement_message = request.form.get('user_message')
     if blender_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(blender_form.blenders_crew.data, blender_form.blenders.data):
                 flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
                 return response
             else:
-                move(blender_form.blenders, blender_form.blenders_crew, treater_name)
+                move(blender_form.blenders, blender_form.blenders_crew, treater_name, movement_message)
                 return response
 
         elif blender_form.blenders_crew.data == current_user.crew:
             flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
             return response
         else:
-            move(blender_form.blenders, blender_form.blenders_crew, treater_name)
+            move(blender_form.blenders, blender_form.blenders_crew, treater_name, movement_message)
+            return response
+    else:
+        response = redirect(url_for('main'))
+        return response
+
+@app.route('/move_missile', methods=['POST', 'GET'])
+@app.route('/move_missile/<crew>', methods=['POST', 'GET'])
+@login_required
+def move_missile(crew=None):
+    """Action route from button on main page. Initiates moving equipment to selected crew in dropdown."""
+    if crew is not None and current_user.is_admin:
+        missile_numbers = models.create_list(crew, 'missile')
+        response = make_response(redirect(url_for('admin')))
+    else:
+        missile_numbers = models.create_list(current_user.crew, 'missile')
+        response = make_response(redirect(url_for('main')))
+    data = get_saved_data()
+    data.update(dict(request.form.items()))
+    response.set_cookie('user_input', json.dumps(data))
+    missile_form = forms.MissileForm()
+    missile_form.missiles.choices = missile_numbers
+    treater_name = request.form.get('user_name')
+    movement_message = request.form.get('user_message')
+    if missile_form.validate_on_submit():
+        if current_user.is_admin:
+            if models.check_crew(missile_form.missiles_crew.data, missile_form.missiles.data):
+                flash('{} is already on {} crew.'.format(missile_form.missiles.data, missile_form.missiles_crew.data))
+                return response
+            else:
+                move(missile_form.missiles, missile_form.missiles_crew, treater_name, movement_message)
+                return response
+
+        elif missile_form.missiles_crew.data == current_user.crew:
+            flash('{} is already on {} crew.'.format(missile_form.missiles.data, missile_form.missiles_crew.data))
+            return response
+        else:
+            move(missile_form.missiles, missile_form.missiles_crew, treater_name, movement_message)
             return response
     else:
         response = redirect(url_for('main'))
@@ -286,6 +329,7 @@ def move_hydration(crew=None):
     hydration_form = forms.HydrationForm()
     hydration_form.hydrations.choices = hydration_numbers
     treater_name = request.form.get('user_name')
+    movement_message = request.form.get('user_message')
     if hydration_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(hydration_form.hydrations_crew.data, hydration_form.hydrations.data):
@@ -293,7 +337,7 @@ def move_hydration(crew=None):
                                                          hydration_form.hydrations_crew.data))
                 return response
             else:
-                move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name)
+                move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name, movement_message)
                 return response
 
         elif hydration_form.hydrations_crew.data == current_user.crew:
@@ -301,7 +345,7 @@ def move_hydration(crew=None):
                                                      hydration_form.hydrations_crew.data))
             return response
         else:
-            move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name)
+            move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name, movement_message)
             return response
     else:
         response = redirect(url_for('main'))
@@ -325,6 +369,7 @@ def move_float(crew=None):
     float_form = forms.FloatForm()
     float_form.floats.choices = float_numbers
     treater_name = request.form.get('user_name')
+    movement_message = request.form.get('user_message')
     if float_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(float_form.floats_crew.data, float_form.floats.data):
@@ -332,7 +377,7 @@ def move_float(crew=None):
                                                          float_form.floats_crew.data))
                 return response
             else:
-                move(float_form.floats, float_form.floats_crew, treater_name)
+                move(float_form.floats, float_form.floats_crew, treater_name, movement_message)
                 return response
 
         elif float_form.floats_crew.data == current_user.crew:
@@ -340,7 +385,7 @@ def move_float(crew=None):
                                                      float_form.floats_crew.data))
             return response
         else:
-            move(float_form.floats, float_form.floats_crew, treater_name)
+            move(float_form.floats, float_form.floats_crew, treater_name, movement_message)
             return response
 
     else:
@@ -411,7 +456,7 @@ def maintenance(pump=None):
                                            parts_form_packing.four_point_five_packing.data, grease_form.grease_psi.data,
                                            current_user.username)
         flash('Maintenance logged for {}'.format(pump))
-        return redirect(url_for('main'))
+        return redirect(url_for('maintenance', pump=pump))
 
     return render_template('maintenance.html', maintenance_form=maintenance_form,
                            hole_form=hole_form, search_form=search_form, parts_form_vs=parts_form_vs,
@@ -432,5 +477,3 @@ if __name__ == '__main__':
     except ValueError:
         pass
     app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
-
-

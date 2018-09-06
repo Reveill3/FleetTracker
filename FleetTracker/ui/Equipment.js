@@ -10,6 +10,8 @@ const Equipment = props => {
           <div className='col'>
             <ListGroupItemHeading className='d-inline-block'>{equipment.unitnumber}</ListGroupItemHeading>
             <ListGroupItemText>{equipment.message}</ListGroupItemText>
+            <h3>Reason:</h3>
+            <ListGroupItemText>{equipment.details}</ListGroupItemText>
           </div>
           <Button color={(equipment.yours && equipment.isCancelled) ? 'warning':
             (equipment.isCancelled) ? 'success' : 'danger'}

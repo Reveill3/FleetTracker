@@ -17,7 +17,8 @@ class TransitList(Resource):
                 'Time': movementdict['timestamp'].strftime('%H:%M'),
                 'transferto': movementdict['crew_transfer'],
                 'transferfrom': movementdict['crew_from'],
-                'id': movementdict['id']
+                'id': movementdict['id'],
+                'details': movementdict['details']
             }
             jsoncollection.append(jsondict)
         return jsonify(jsoncollection)
@@ -30,6 +31,7 @@ class TransitList(Resource):
             if movement['yours']:
                 models.Equipment.update(crew=movement['transferfrom']).where(
                     models.Equipment.unitnumber == unit_number).execute()
+                models.Movement.delete().where(models.Movement.id == movement['id']).execute()
             else:
                 models.Equipment.update(crew=movement['transferTo']).where(
                     models.Equipment.unitnumber == unit_number).execute()

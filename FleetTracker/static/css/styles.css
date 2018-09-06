@@ -271,11 +271,20 @@ header {
         text-align: right;
     }
 
+    .row {
+      display: block
+    }
+
+    .col-md-2 {
+      max-width: 1200px;
+    }
 
 
 }
 
-@media (min-width: 1100px) {
+
+
+@media (min-width: 1200px) {
     .title,
     .title-admin {
         width: 40%;
@@ -283,7 +292,11 @@ header {
         font-size: 30px;
     }
 
+    .container {
+      max-width: 1300px;
+    }
 
-
+    .row {
+      display: flex
+    }
 }
-

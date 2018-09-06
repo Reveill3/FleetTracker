@@ -80,6 +80,7 @@ class Movement(Model):
     unit_number = CharField()
     crew_transfer = CharField()
     crew_from = CharField()
+    details = TextField()
 
     class Meta:
         database = DATABASE

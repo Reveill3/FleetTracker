@@ -7,7 +7,7 @@ from models import User, Equipment
 from flask_login import current_user
 
 crews = [('yard', 'Yard'), ('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'), ('onyx', 'Onyx'),
-         ('purple', 'Purple'), ('silver', 'Silver'), ('gold', 'Gold')]
+         ('gold', 'Gold')]
 
 
 maintenance_types = [('select maintenance', 'Select Maintenance'),
@@ -99,7 +99,7 @@ class AddForm(FlaskForm):
 
     type = SelectField('type',
                        choices=[('pump', 'Pump'), ('blender', 'Blender'), ('float', 'Float'),
-                                ('hydration', 'Hydration')]
+                                ('hydration', 'Hydration'), ('missile', 'Missile')]
                        )
 
     crew = SelectField('crew',
@@ -158,6 +158,14 @@ class FloatForm(FlaskForm):
         choices=crews
     )
 
+class MissileForm(FlaskForm):
+
+    missiles = RadioField('missiles')
+
+    missiles_crew = SelectField(
+        'Crew',
+        choices=crews
+    )
 
 class AdminForm(FlaskForm):
 
@@ -222,4 +230,3 @@ class GreaseForm(FlaskForm):
         validators=[DataRequired(),
                     ]
     )
-
