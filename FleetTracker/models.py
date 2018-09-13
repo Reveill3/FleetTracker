@@ -1,26 +1,35 @@
 import datetime
-
+from airtable import Airtable
 from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin
 from peewee import *
+import pandas as pd
+import sqlite3
+from sqlalchemy import create_engine
 
 DATABASE = SqliteDatabase('Fleet.db')
 
+equipment = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Equipment', api_key='keyVE2OTPcmyTURGm')
+movement = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Movement', api_key='keyVE2OTPcmyTURGm')
+users = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Users', api_key='keyVE2OTPcmyTURGm')
+maintenance = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Maintenance', api_key='keyVE2OTPcmyTURGm')
 
 def check_crew(crew, unit_number):
     """ Checks to see if the current piece of equipment selected is
     already on the selected crew you want to move it to"""
-    query = Equipment.select().where(Equipment.unitnumber == unit_number).get()
-    return query.crew == crew
+    query = equipment.search('UnitNumber', unit_number)
+    print(query)
+    return query[0]['fields']['Crew'] == crew
 
 
 def create_list(crew, equipment_type):
     """ Populates list of unit numbers for users crew or admins selected crew. This is used to populate form choices """
-    query = list(Equipment.select().where(Equipment.crew == crew,
-                                          Equipment.type == equipment_type))
+    color_filter = equipment.search('Crew', crew)
+    equipment_filter = list(filter(lambda e: e['fields']['Type'] == equipment_type, color_filter))
+
     equipment_list = []
-    for equipment in query:
-        equipment_list.append((equipment.unitnumber, equipment.unitnumber))
+    for unit in equipment_filter:
+        equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['UnitNumber']))
     return equipment_list
 
 
@@ -120,3 +129,15 @@ def initialize():
     DATABASE.connect()
     DATABASE.create_tables([User, Equipment, Movement, Maintenance], safe=True)
     DATABASE.close()
+
+def initialize_csv():
+    df = pd.read_csv('initialize.csv')
+    df.columns = df.columns.str.strip()
+    num_rows = len(df)
+    con = create_engine('sqlite:///Fleet.db')
+    for i in range(num_rows):
+        try:
+            df.iloc[i:i+1].to_sql(name="equipment",con=con, if_exists = 'append', index='unitnumber')
+        except ValueError:
+            print(df.iloc[i])
+            pass

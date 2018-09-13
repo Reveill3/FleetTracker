@@ -12,11 +12,18 @@
     </form>
 </div>
 <article class="mt-4">
-    <h1 class="stream">Recent Equipment Movement</h1>
-    <ol class="stream-content">
-        {% for movement in movement_stream %}
-        <li>{{ movement.message }}</li>
-        {% endfor %}
-    </ol>
+  <h1 class="border-bottom">Recent Movement</h1>
+  <ol class="stream-content">
+      {% for movement in movement_stream %}
+      <li class="list-group-item">
+        <h5>
+          {{ movement.fields.message }}
+        </h5>
+        <div>
+          Reason: {{ movement.fields.details }}
+        </div>
+      </li>
+      {% endfor %}
+  </ol>
 </article>
 {% endblock %}

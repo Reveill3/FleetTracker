@@ -11,6 +11,8 @@ import forms
 import models
 import os
 import re
+import uuid
+import datetime
 
 
 THREADED = True
@@ -56,13 +58,11 @@ def get_saved_data():
 def move(equipment_field, crew_field, supervisor, message):
     """Moves a piece of equipment to specified crew in database.
     Changes 'crew' column in database to specified field"""
-    models.Equipment.update(crew='pending').where(
-        models.Equipment.unitnumber ==
-        equipment_field.data).execute()
+    models.equipment.update_by_field('UnitNumber', equipment_field.data, {'Crew': 'pending'})
     flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
-    models.Movement.create(user=supervisor, message='{} has moved {} to {} crew'.format(
-        supervisor, equipment_field.data, crew_field.data), inTransit=True, unit_number=equipment_field.data,
-                           crew_transfer=crew_field.data, crew_from=current_user.crew, details=message)
+    models.movement.insert({'Movement_Id': uuid.uuid4().hex,'User': supervisor, 'message': '{} has moved {} to {} crew'.format(
+        supervisor, equipment_field.data, crew_field.data), 'inTransit': 'checked', 'UnitNumber': equipment_field.data,
+                           'CrewTransfer': crew_field.data, 'CrewFrom': current_user.crew, 'details': message}, typecast=True)
 
 
 @login_manager.user_loader
@@ -157,7 +157,7 @@ def main(crew=None):
     data = get_saved_data()
     data.update(dict(request.form.items()))
     response.set_cookie('user_input', json.dumps(data))
-    movement_stream = models.Movement.select().order_by(models.Movement.timestamp.desc()).limit(10)
+    movement_stream = models.movement.get_all(maxRecords=10, sort=[('timestamp', 'desc'),])
     if crew is not None and current_user.is_admin:
         pump_numbers = models.create_list(crew, 'pump')
         blender_numbers = models.create_list(crew, 'blender')
@@ -398,7 +398,7 @@ def move_float(crew=None):
 def admin():
     search_form = forms.SearchForm()
     admin_form = forms.AdminForm()
-    movement_stream = models.Movement.select().order_by(models.Movement.timestamp.desc()).limit(10)
+    movement_stream = models.movement.get_all(maxRecords=10, sort=[('timestamp', 'desc'),])
 
     if admin_form.validate_on_submit():
         return redirect(url_for('main', crew=admin_form.crew.data))
@@ -466,6 +466,7 @@ def maintenance(pump=None):
 
 if __name__ == '__main__':
     models.initialize()
+    # models.initialize_csv()
     try:
         models.User.create_user(
             username='alester',

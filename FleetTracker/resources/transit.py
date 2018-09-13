@@ -7,18 +7,17 @@ import models
 class TransitList(Resource):
 
     def get(self):
-        movements = models.Movement.select().where(models.Movement.inTransit == 'True')
+        movements = models.movement.search('inTransit', 'checked')
         jsoncollection = []
         for movement in movements:
-            movementdict = model_to_dict(movement)
             jsondict = {
-                'user': movementdict['user'],
-                'unitnumber': movementdict['unit_number'],
-                'Time': movementdict['timestamp'].strftime('%H:%M'),
-                'transferto': movementdict['crew_transfer'],
-                'transferfrom': movementdict['crew_from'],
-                'id': movementdict['id'],
-                'details': movementdict['details']
+                'user': movement['fields']['User'],
+                'unitnumber': models.equipment.get(movement['fields']['UnitNumber'][0])['fields']['UnitNumber'],
+                'Time': movement['fields']['timestamp'],
+                'transferto': movement['fields']['CrewTransfer'],
+                'transferfrom': movement['fields']['CrewFrom'],
+                'id': movement['fields']['Movement_Id'],
+                'details': movement['fields']['details']
             }
             jsoncollection.append(jsondict)
         return jsonify(jsoncollection)
@@ -26,15 +25,18 @@ class TransitList(Resource):
     def post(self):
         movements_to_cancel = request.get_json()
         for movement in movements_to_cancel:
-            models.Movement.update(inTransit=False).where(models.Movement.id == movement['id']).execute()
-            unit_number = models.Movement.select().where(models.Movement.id == movement['id']).get().unit_number
+            print(movement)
+            print(movement['id'])
+            models.movement.update_by_field('Movement_Id', movement['id'], {'inTransit': 'not'})
+            print( models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']['UnitNumber'])
+            unit_number = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']['UnitNumber']
+
             if movement['yours']:
-                models.Equipment.update(crew=movement['transferfrom']).where(
-                    models.Equipment.unitnumber == unit_number).execute()
-                models.Movement.delete().where(models.Movement.id == movement['id']).execute()
+                models.equipment.update('UnitNumber', unit_number, {'Crew': movement['transferfrom']})
+                models.movement.delete_by_field('Movement_Id', movement['id'])
             else:
-                models.Equipment.update(crew=movement['transferTo']).where(
-                    models.Equipment.unitnumber == unit_number).execute()
+                print(unit_number)
+                models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': movement['transferTo']})
 
 
 transit_api = Blueprint('resources.transit', __name__)

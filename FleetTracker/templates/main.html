@@ -254,10 +254,10 @@
             {% for movement in movement_stream %}
             <li class="list-group-item">
               <h5>
-                {{ movement.message }}
+                {{ movement.fields.message }}
               </h5>
               <div>
-                Reason: {{ movement.details }}
+                Reason: {{ movement.fields.details }}
               </div>
             </li>
             {% endfor %}
