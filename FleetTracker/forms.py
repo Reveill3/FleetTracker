@@ -11,7 +11,7 @@ crews = [('yard', 'Yard'), ('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'),
 
 
 maintenance_types = [('select maintenance', 'Select Maintenance'),
-                     ('valves & seats', 'Valves & Seats'), ('packing', 'Packing')]
+                     ('valves & seats', 'Valves & Seats'), ('packing', 'Packing'), ('other', 'Other')]
 
 holes = [('select hole', 'Select Hole'), ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5')]
 

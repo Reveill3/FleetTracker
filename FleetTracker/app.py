@@ -462,11 +462,12 @@ def maintenance(pump=None):
     if grease_form.validate_on_submit():
         try:
             models.maintenance.insert({'Id': uuid.uuid4().hex,'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
-                                               'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': parts_form_vs.suction_valves.data, 'suction_seats': parts_form_vs.suction_seats.data,
-                                               'discharge_valves': parts_form_vs.discharge_valves.data, 'discharge_seats': parts_form_vs.discharge_seats.data,
-                                               'five_packing': parts_form_packing.five_packing.data,
-                                               'four_point_five_packing': parts_form_packing.four_point_five_packing.data, 'grease_pressure': grease_form.grease_psi.data,
-                                               'Treaters': [models.treaters.search('Name', grease_form.treater_name.data)[0]['id']]})
+                                               'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': int(parts_form_vs.suction_valves.data), 'suction_seats': int(parts_form_vs.suction_seats.data),
+                                               'discharge_valves': int(parts_form_vs.discharge_valves.data), 'discharge_seats': int(parts_form_vs.discharge_seats.data),
+                                               'five_packing': int(parts_form_packing.five_packing.data),
+                                               'four_point_five_packing': int(parts_form_packing.four_point_five_packing.data), 'grease_pressure': int(grease_form.grease_psi.data),
+                                               'Treaters': [models.treaters.search('Name', grease_form.treater_name.data)[0]['id']],
+                                               'Crew': current_user.crew})
             flash('Maintenance logged for {}'.format(pump))
         except IndexError:
            flash('{} is not an authorized name. Contact admin for help.'.format(grease_form.treater_name.data))
