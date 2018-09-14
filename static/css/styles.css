@@ -1,0 +1,302 @@
+/* =================================
+  Base Element Styles
+==================================== */
+body {
+    font-family: 'Varela Round', sans-serif;
+    line-height: 1.6;
+    color: #3A3A40;
+}
+
+header {
+    background: #556B2F;
+    display: block;
+    box-shadow: 0px 0px 10px black;
+}
+
+
+/* =================================
+  Base Layout Styles
+==================================== */
+.number {
+    list-style-type: decimal;
+    text-align: left;
+    margin: 0 auto;
+    width: 90%;
+}
+
+
+.stream li {
+    padding-top: 10px;
+    text-align: center;
+    box-shadow: inset 0px -1px #00000024;
+}
+
+.nav {
+    display: block;
+}
+
+.main-nav {
+    display: block;
+    background: #556B2F;
+    text-align: center;
+}
+
+.main-nav a:hover {
+    color: white;
+}
+
+.main-nav a {
+    display: block;
+    margin-top: -4px;
+    color: #3A3A40;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+    border-bottom: solid 2px;
+    font-size: 20px;
+}
+
+.admin-form {
+    padding-top: 50%;
+}
+
+.form {
+    vertical-align: top;
+    margin-right: 0px;
+    display: block;
+    padding-top: 45px;
+}
+
+.stream {
+    text-align: center;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+}
+
+.flash {
+    text-align: center;
+    background-color: slategrey;
+    margin-bottom: 10px;
+}
+
+.stream-content {
+    text-align: center;
+    list-style-type: none;
+    padding-left: 0px;
+}
+
+.stream-content li {
+    margin-bottom: 5px;
+}
+
+.button {
+    background-color: #3e474f;
+    color: white;
+    border-radius: 10px;
+    margin-left: 10px;
+
+}
+
+.button:hover {
+    border-color: #3e474f;
+    transform: scale(1.05);
+}
+
+.master {
+    text-align: center;
+}
+
+.title{
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    opacity: .9;
+    font-size: 25px;
+}
+
+.title-admin {
+    display: block;
+    text-align: center;
+}
+
+.radio {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.radio li input {
+    visibility: hidden;
+}
+
+.radio li input:checked+label {
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.container-home {
+    text-align: center;
+    margin: 0 10px;
+    width: 80%;
+}
+
+
+.field {
+    padding-top: 10px;
+
+}
+.home {
+    width: 90%;
+}
+
+
+/* =================================
+  Media Queries
+==================================== */
+
+@media (min-width: 769px) {
+
+    header {
+        height: 100px;
+        position: relative;
+    }
+
+    .container-home {
+        width: 90%;
+        max-width: 1150px;
+        margin: 0 auto;
+        padding-top: 5%;
+    }
+
+    .wrap {
+        min-height: calc(100vh - 89px);
+    }
+
+    .stream li {
+        padding-top: 10px;
+        text-align: center;
+        box-shadow: inset 0px -1px #00000024;
+    }
+
+    .main-nav a {
+        color: #3a3a3a;
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 18px;
+        vertical-align: bottom;
+    }
+
+    .form {
+        padding-right: 1em;
+        padding-left:  1em;
+        display: inline-block;
+    }
+
+    .main-nav {
+        margin-left: 5%;
+        float: right;
+        padding-right: 0%;
+    }
+
+    .title,
+    .title-admin {
+        font-size: 20px;
+        width: 25%;
+        padding-left: 0;
+        float: left;
+        position: absolute;
+        bottom: 0;
+    }
+
+    .admin {
+        padding-top: 5%;
+    }
+
+    .search {
+        float: right;
+    }
+
+    .search-button {
+        float: right;
+        margin-top: 10px;
+        margin-right: 10px;
+    }
+
+    .search-text {
+        float: left;
+        margin-right: 10px;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 10px;
+        padding-left: 10%;
+        width: 100%;
+    }
+
+    .admin-form {
+        padding-top: 10%;
+    }
+
+    .number {
+         padding: 0 20%;
+     }
+
+    .home {
+        width: 100%;
+    }
+
+    .maint-forms {
+        padding-top: 50px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .labeled-fields {
+        text-align: right;
+    }
+
+    .parts-num  {
+        margin: 0;
+        display: inline-block;
+        padding-left: 10px;
+        text-align: right;
+    }
+
+    .parts-label {
+        display: inline-block;
+        padding-right: 10px;
+        text-align: right;
+    }
+
+    .row {
+      display: block
+    }
+
+    .col-md-2 {
+      max-width: 1200px;
+    }
+
+
+}
+
+
+
+@media (min-width: 1200px) {
+    .title,
+    .title-admin {
+        width: 40%;
+        text-align: center;
+        font-size: 30px;
+    }
+
+    .container {
+      max-width: 1300px;
+    }
+
+    .row {
+      display: flex
+    }
+}
