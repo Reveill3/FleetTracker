@@ -25,17 +25,12 @@ class TransitList(Resource):
     def post(self):
         movements_to_cancel = request.get_json()
         for movement in movements_to_cancel:
-            print(movement)
-            print(movement['id'])
             models.movement.update_by_field('Movement_Id', movement['id'], {'inTransit': 'not'})
-            print( models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']['UnitNumber'])
             unit_number = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']['UnitNumber']
-
             if movement['yours']:
-                models.equipment.update('UnitNumber', unit_number, {'Crew': movement['transferfrom']})
+                models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': movement['transferfrom']})
                 models.movement.delete_by_field('Movement_Id', movement['id'])
             else:
-                print(unit_number)
                 models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': movement['transferTo']})
 
 

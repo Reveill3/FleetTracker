@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, TextAreaField, SelectField, Radi
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
 from wtforms import ValidationError
-from models import User, Equipment
+from models import User
 from flask_login import current_user
 
 crews = [('yard', 'Yard'), ('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'), ('onyx', 'Onyx'),
@@ -227,6 +227,12 @@ class GreaseForm(FlaskForm):
 
     grease_psi = IntegerField(
         'Grease Pressure',
+        validators=[DataRequired(),
+                    ]
+    )
+
+    treater_name = TextAreaField(
+        'Treater Name',
         validators=[DataRequired(),
                     ]
     )

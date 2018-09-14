@@ -12,7 +12,8 @@ import models
 import os
 import re
 import uuid
-import datetime
+from datetime import datetime
+from dateutil import tz
 
 
 THREADED = True
@@ -47,6 +48,9 @@ def hash_processor():
     return dict(hashed_url=hashed_url)
 
 
+def search_field(field, data, table):
+    return table.search(field, data)[0]['fields']
+
 def get_saved_data():
     try:
         data = json.loads(request.cookies.get('user_input'))
@@ -54,6 +58,13 @@ def get_saved_data():
         data = {}
     return data
 
+def convertTime(time):
+    from_zone = tz.tzutc()
+    to_zone = tz.tzlocal()
+    utc = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
+    utc = utc.replace(tzinfo=from_zone)
+    central = utc.astimezone(to_zone)
+    return central
 
 def move(equipment_field, crew_field, supervisor, message):
     """Moves a piece of equipment to specified crew in database.
@@ -62,15 +73,16 @@ def move(equipment_field, crew_field, supervisor, message):
     flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
     models.movement.insert({'Movement_Id': uuid.uuid4().hex,'User': supervisor, 'message': '{} has moved {} to {} crew'.format(
         supervisor, equipment_field.data, crew_field.data), 'inTransit': 'checked', 'UnitNumber': equipment_field.data,
-                           'CrewTransfer': crew_field.data, 'CrewFrom': current_user.crew, 'details': message}, typecast=True)
+                           'CrewTransfer': crew_field.data, 'CrewFrom': current_user.crew, 'details': message, 'Treaters': supervisor}, typecast=True)
 
 
 @login_manager.user_loader
 def load_user(userid):
-    try:
-        return models.User.get(models.User.id == userid)
-    except models.DoesNotExist:
-        return None
+    user_data = search_field('id', userid, models.users)
+    user = models.User(user_data['id'], user_data['UserName'],
+        str.encode(user_data['Password']), user_data['Crew'])
+    return user
+
 
 
 @app.before_request
@@ -99,8 +111,7 @@ def register():
     form = forms.RegisterForm()
     if form.validate_on_submit():
         flash('Registration Success!', "success")
-        models.User.create_user(username=form.username.data, email=form.email.data, password=form.password.data
-                                , crew=form.crew.data)
+        models.add_user(form.username.data, form.crew.data, form.password.data)
         return redirect(url_for('main'))
     return render_template('register.html', form=form)
 
@@ -111,7 +122,9 @@ def login():
     search_form = forms.SearchForm()
     if form.validate_on_submit():
         try:
-            user = models.User.get(models.User.username == form.username.data)
+            user_data = search_field('UserName', form.username.data, models.users)
+            user = models.User(user_data['id'], user_data['UserName'],
+                str.encode(user_data['Password']), user_data['Crew'])
         except models.DoesNotExist:
             flash('Your username or password does not match', 'error')
         if check_password_hash(user.password, form.password.data):
@@ -417,8 +430,8 @@ def search():
         response = make_response(redirect(url_for('main')))
     if search_form.validate_on_submit():
         try:
-            query = models.Equipment.select().where(models.Equipment.unitnumber == search_form.search.data).get()
-            flash('{} is on {} crew'.format(search_form.search.data, query.crew))
+            query = models.equipment.search('UnitNumber', search_form.search.data)
+            flash('{} is on {} crew'.format(search_form.search.data, query[0]['fields']['Crew']))
         except:
             flash('{} is not in the system. If this is a mistake please inform admin.'.format(search_form.search.data))
         return response
@@ -440,21 +453,24 @@ def maintenance(pump=None):
     maintenance_stream = models.maintenance.search('UnitNumber', pump, sort=[('Timestamp', 'desc'),])
     messages = []
     for maint_log in maintenance_stream:
-        message = '{} did {} on {} Hole {} on {}'.format(maint_log['fields']['User'], maint_log['fields']['MaintenanceType'],
-                                                               maint_log['fields']['UnitNumber'], maint_log['fields']['Hole'],
-                                                               maint_log['fields']['Timestamp'])
+        message = '{} did {} on {} Hole {} on {}'.format(models.treaters.get(maint_log['fields']['Treaters'][0])['fields']['Name'], maint_log['fields']['MaintenanceType'],
+                                                               models.equipment.get(maint_log['fields']['UnitNumber'][0])['fields']['UnitNumber'], maint_log['fields']['Hole'],
+                                                               convertTime(maint_log['fields']['Timestamp']))
 
         messages.append(message)
 
     if grease_form.validate_on_submit():
-        print(pump)
-        models.maintenance.insert({'Id': uuid.uuid4().hex,'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
-                                           'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': parts_form_vs.suction_valves.data, 'suction_seats': parts_form_vs.suction_seats.data,
-                                           'discharge_valves': parts_form_vs.discharge_valves.data, 'discharge_seats': parts_form_vs.discharge_seats.data,
-                                           'five_packing': parts_form_packing.five_packing.data,
-                                           'four_point_five_packing': parts_form_packing.four_point_five_packing.data, 'grease_pressure': grease_form.grease_psi.data,
-                                           'User': [models.users.search('Name', current_user.username)[0]['id']]})
-        flash('Maintenance logged for {}'.format(pump))
+        try:
+            models.maintenance.insert({'Id': uuid.uuid4().hex,'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
+                                               'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': parts_form_vs.suction_valves.data, 'suction_seats': parts_form_vs.suction_seats.data,
+                                               'discharge_valves': parts_form_vs.discharge_valves.data, 'discharge_seats': parts_form_vs.discharge_seats.data,
+                                               'five_packing': parts_form_packing.five_packing.data,
+                                               'four_point_five_packing': parts_form_packing.four_point_five_packing.data, 'grease_pressure': grease_form.grease_psi.data,
+                                               'Treaters': [models.treaters.search('Name', grease_form.treater_name.data)[0]['id']]})
+            flash('Maintenance logged for {}'.format(pump))
+        except IndexError:
+           flash('{} is not an authorized name. Contact admin for help.'.format(grease_form.treater_name.data))
+
         return redirect(url_for('maintenance', pump=pump))
 
     return render_template('maintenance.html', maintenance_form=maintenance_form,
@@ -464,16 +480,16 @@ def maintenance(pump=None):
 
 
 if __name__ == '__main__':
-    models.initialize()
+    # models.initialize()
     # models.initialize_csv()
-    try:
-        models.User.create_user(
-            username='alester',
-            email='austin.lester@ftsi.com',
-            password='password',
-            admin=True,
-            crew='red'
-        )
-    except ValueError:
-        pass
+    # try:
+    #     models.User.create_user(
+    #         username='alester',
+    #         email='austin.lester@ftsi.com',
+    #         password='password',
+    #         admin=True,
+    #         crew='red'
+    #     )
+    # except ValueError:
+    #     pass
     app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
