@@ -1,7 +1,0 @@
-# Dependencies #
-node_modules/
-
-# Test Files #
-AirTable Testing.ipynb
-airtabletest.py
-equipment.csv
