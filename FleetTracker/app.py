@@ -437,24 +437,23 @@ def maintenance(pump=None):
     parts_form_vs = forms.PartsFormVS()
     parts_form_packing = forms.PartsFormPacking()
     grease_form = forms.GreaseForm()
-    maintenance_stream = models.Maintenance.select().where(models.Maintenance.equipment == pump).order_by(
-                                                            models.Maintenance.timestamp.desc()).limit(10)
+    maintenance_stream = models.maintenance.search('UnitNumber', pump, sort=[('Timestamp', 'desc'),])
     messages = []
-
     for maint_log in maintenance_stream:
-        message = '{} did {} on {} Hole {} on {} at {}'.format(maint_log.user, maint_log.maintenance_type,
-                                                               maint_log.equipment.unitnumber, maint_log.hole,
-                                                               maint_log.timestamp.strftime('%b %d'),
-                                                               maint_log.timestamp.strftime('%H:%M'))
+        message = '{} did {} on {} Hole {} on {}'.format(maint_log['fields']['User'], maint_log['fields']['MaintenanceType'],
+                                                               maint_log['fields']['UnitNumber'], maint_log['fields']['Hole'],
+                                                               maint_log['fields']['Timestamp'])
+
         messages.append(message)
 
     if grease_form.validate_on_submit():
-        models.Maintenance.add_maintenance(maintenance_form.maintenance_type.data, hole_form.Hole.data,
-                                           pump, parts_form_vs.suction_valves.data, parts_form_vs.suction_seats.data,
-                                           parts_form_vs.discharge_valves.data, parts_form_vs.discharge_seats.data,
-                                           parts_form_packing.five_packing.data,
-                                           parts_form_packing.four_point_five_packing.data, grease_form.grease_psi.data,
-                                           current_user.username)
+        print(pump)
+        models.maintenance.insert({'Id': uuid.uuid4().hex,'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
+                                           'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': parts_form_vs.suction_valves.data, 'suction_seats': parts_form_vs.suction_seats.data,
+                                           'discharge_valves': parts_form_vs.discharge_valves.data, 'discharge_seats': parts_form_vs.discharge_seats.data,
+                                           'five_packing': parts_form_packing.five_packing.data,
+                                           'four_point_five_packing': parts_form_packing.four_point_five_packing.data, 'grease_pressure': grease_form.grease_psi.data,
+                                           'User': [models.users.search('Name', current_user.username)[0]['id']]})
         flash('Maintenance logged for {}'.format(pump))
         return redirect(url_for('maintenance', pump=pump))
 
