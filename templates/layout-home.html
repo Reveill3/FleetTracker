@@ -18,7 +18,7 @@
             {% if current_user.is_authenticated %}
             <div class="search">
                 <form action="{{ url_for('search') }}" method="POST">
-                    {{ search_form.csrf_token }}
+                    {{ search_form.hidden_tag() }}
                     {% for field in search_form %}
                     {{ render_field(field, div_class='search-text') }}
                     {% endfor %}
