@@ -118,8 +118,8 @@ def register():
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
-    form = forms.LoginForm()
-    search_form = forms.SearchForm()
+    form = forms.LoginForm(prefix='a')
+    search_form = forms.SearchForm(prefix='b')
     if form.validate_on_submit():
         try:
             user_data = search_field('UserName', form.username.data, models.users)
