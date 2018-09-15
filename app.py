@@ -24,7 +24,7 @@ HOST = '192.168.86.26'
 app = Flask(__name__)
 app.register_blueprint(transit_api)
 CORS(app)
-app.SECRET_KEY = 'thisisblahblahblahtagkeyshit'
+app.secret_key = 'thisisblahblahblahtagkeyshit'
 
 
 login_manager = LoginManager()
