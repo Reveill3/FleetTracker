@@ -3,7 +3,6 @@
 
 {% block content %}
 <form method="POST" action="" class="form">
-    {{ form.hidden_tag() }}
     {% for field in form %}
         {{ render_field(field) }}
     {% endfor %}
