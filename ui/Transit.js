@@ -71,7 +71,7 @@ class Transit extends Component {
       }
 
     });
-    fetch('https://odessafleettracker.herokuapp.com/api/v1/transit_list', {
+    fetch('https://odessafleettracker.herokuapp.com/api/v1/transit_list/', {
       method:'POST',
       mode: 'cors',
       body: JSON.stringify(cancelledId),
