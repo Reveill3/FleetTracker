@@ -2,8 +2,7 @@
 {% from "macros.html" import render_field %}
 
 {% block content %}
-<form method="POST" action="" class="form">
-    {{ form.hidden_tag() }}
+<form method="POST" action='' >
     {% for field in form %}
         {{ render_field(field) }}
     {% endfor %}
