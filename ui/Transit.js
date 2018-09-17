@@ -24,7 +24,7 @@ class Transit extends Component {
 
 
   populate_transit = () => {
-    fetch('https://odessafleettracker.herokuapp.com/api/v1/transit_list', {mode: 'cors'})
+    fetch('https://odessafleettracker.herokuapp.com/api/v1/transit_list/', {mode: 'cors'})
       .then(response => response.json())
       .then(MyJson => {
         let pumpArray = [];
