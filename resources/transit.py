@@ -27,7 +27,7 @@ class TransitList(Resource):
         for movement in movements_to_cancel:
             models.movement.update_by_field('Movement_Id', movement['id'], {'inTransit': 'not'})
             unit_number = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']['UnitNumber']
-            if movement['yours'].title():
+            if movement['yours']:
                 models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': movement['transferfrom']})
                 models.movement.delete_by_field('Movement_Id', movement['id'])
             else:
