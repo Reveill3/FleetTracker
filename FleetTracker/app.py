@@ -24,7 +24,7 @@ from datetime import datetime
 THREADED = True
 DEBUG = True
 PORT = 8000
-HOST = '192.168.1.173'
+HOST = '192.168.86.26'
 
 app = Flask(__name__)
 app.register_blueprint(transit_api)
