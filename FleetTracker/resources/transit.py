@@ -11,13 +11,14 @@ class TransitList(Resource):
         jsoncollection = []
         for movement in movements:
             jsondict = {
-                'user': movement['fields']['User'],
+                'user': movement['fields']['Treaters'],
                 'unitnumber': models.equipment.get(movement['fields']['UnitNumber'][0])['fields']['UnitNumber'],
                 'Time': movement['fields']['timestamp'],
-                'transferto': movement['fields']['CrewTransfer'],
-                'transferfrom': movement['fields']['CrewFrom'],
+                'transferto': movement['fields']['CrewTransfer'][0],
+                'transferfrom': movement['fields']['CrewFrom'][0],
                 'id': movement['fields']['Movement_Id'],
-                'details': movement['fields']['details']
+                'details': movement['fields']['details'],
+                'type': models.equipment.get(movement['fields']['UnitNumber'][0])['fields']['Type']
             }
             jsoncollection.append(jsondict)
         return jsonify(jsoncollection)
@@ -28,10 +29,10 @@ class TransitList(Resource):
             models.movement.update_by_field('Movement_Id', movement['id'], {'inTransit': 'not'})
             unit_number = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']['UnitNumber']
             if movement['yours']:
-                models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': movement['transferfrom']})
+                models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': [movement['transferfrom']]})
                 models.movement.delete_by_field('Movement_Id', movement['id'])
             else:
-                models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': movement['transferTo']})
+                models.equipment.update_by_field('UnitNumber', unit_number, {'Crew': [movement['transferTo']]})
 
 
 transit_api = Blueprint('resources.transit', __name__)

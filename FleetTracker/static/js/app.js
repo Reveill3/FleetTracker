@@ -57,5 +57,6 @@ $('#Hole').change(function () {
 });
 
 $('#grease_psi').on('keypress', function (event) {
-    $('#maintenance-button').fadeIn(1000);
-});
+      $('#maintenance-button').fadeIn(1000);
+    }
+);

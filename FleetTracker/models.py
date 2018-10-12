@@ -29,12 +29,12 @@ def check_crew(crew, unit_number):
 
 def create_list(crew, equipment_type):
     """ Populates list of unit numbers for users crew or admins selected crew. This is used to populate form choices """
-    color_filter = equipment.search('Crew', crew)
+    color_filter = equipment.search("Crew", crew)
     equipment_filter = list(filter(lambda e: e['fields']['Type'] == equipment_type, color_filter))
 
     equipment_list = []
     for unit in equipment_filter:
-        equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['UnitNumber']))
+        equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['Standby'], unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement']))
     return equipment_list
 
 class User(UserMixin):

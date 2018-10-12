@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, SelectField, RadioField, IntegerField
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
-                                Length, EqualTo)
+                                Length, EqualTo, NumberRange)
 from wtforms import ValidationError
-from models import User
+from models import User, treaters
 from flask_login import current_user
 
 crews = [('yard', 'Yard'), ('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'), ('onyx', 'Onyx'),
@@ -17,6 +17,11 @@ holes = [('select hole', 'Select Hole'), ('1', '1'), ('2', '2'), ('3', '3'), ('4
 
 numbers = [('0', '0'), ('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'), ('5', '5'),
            ('6', '6'), ('7', '7'), ('8', '8'), ('9', '9'), ('10', '10')]
+
+treater_list = list(map(lambda x: x['fields']['Name'], treaters.get_all()))
+
+treater_choices = list(map(lambda x: (x, x), treater_list))
+
 
 def name_exists(form, field):
     if User.select().where(User.username == field.data).exists():
@@ -181,6 +186,7 @@ class MaintenanceForm(FlaskForm):
                                    )
 
 
+
 class HoleForm(FlaskForm):
     Hole = SelectField('Hole',
                        choices=holes
@@ -227,12 +233,12 @@ class GreaseForm(FlaskForm):
 
     grease_psi = IntegerField(
         'Grease Pressure',
-        validators=[DataRequired(),
+        validators=[NumberRange(min=0, max=10000, message='Grease Pressure must be a number less than 10000'),
+                    DataRequired(),
                     ]
     )
 
-    treater_name = TextAreaField(
+    treater_name = SelectField(
         'Treater Name',
-        validators=[DataRequired(),
-                    ]
+        choices=treater_choices
     )

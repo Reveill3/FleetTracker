@@ -5,6 +5,11 @@ from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user,
                              login_required, current_user)
 from resources.transit import transit_api
+from resources.get_equipment_list import get_api
+from resources.get_treaters import get_treaters
+from resources.move_equipment import move_equipment
+from resources.log_maintenance import log_maintenance
+from resources.update_layout import update_layout
 from flask_cors import CORS, cross_origin
 
 import forms
@@ -23,6 +28,11 @@ HOST = '192.168.86.26'
 
 app = Flask(__name__)
 app.register_blueprint(transit_api)
+app.register_blueprint(get_api)
+app.register_blueprint(get_treaters)
+app.register_blueprint(move_equipment)
+app.register_blueprint(log_maintenance)
+app.register_blueprint(update_layout)
 CORS(app)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
 
@@ -245,9 +255,13 @@ def move_pump(crew=None):
             move(pump_form.pumps, pump_form.pumps_crew, treater_name, movement_message)
             return response
     else:
-        response = redirect(url_for('main'))
-        flash('Please Select a Pump')
-        return response
+        if request.form['button'] == 'maintenance':
+            response = redirect(url_for('generic_maintenance'))
+            return response
+        else:
+            response = redirect(url_for('main'))
+            flash('Please Select a Pump')
+            return response
 
 
 @app.route('/move_blender', methods=['POST', 'GET'])
@@ -438,9 +452,42 @@ def search():
     else:
         return response
 
+@app.route('/submit_maint', methods=['GET', 'POST'])
+@app.route('/submit_maint/<pump>', methods=['GET', 'POST'])
+@login_required
+def submit_maint(pump=None):
+    maintenance_form = forms.MaintenanceForm()
+    hole_form = forms.HoleForm()
+    search_form = forms.SearchForm()
+    parts_form_vs = forms.PartsFormVS()
+    parts_form_packing = forms.PartsFormPacking()
+    grease_form = forms.GreaseForm()
+    if grease_form.validate_on_submit():
+        try:
+            models.maintenance.insert({'Id': uuid.uuid4().hex,'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
+                                               'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': int(parts_form_vs.suction_valves.data), 'suction_seats': int(parts_form_vs.suction_seats.data),
+                                               'discharge_valves': int(parts_form_vs.discharge_valves.data), 'discharge_seats': int(parts_form_vs.discharge_seats.data),
+                                               'five_packing': int(parts_form_packing.five_packing.data),
+                                               'four_point_five_packing': int(parts_form_packing.four_point_five_packing.data), 'grease_pressure': int(grease_form.grease_psi.data),
+                                               'Treaters': [models.treaters.search('Name', grease_form.treater_name.data)[0]['id']],
+                                               'Crew': current_user.crew})
+            flash('Maintenance logged for {}'.format(pump))
+        except IndexError:
+           flash('{} is not an authorized name. Contact admin for help.'.format(grease_form.treater_name.data))
 
-@app.route('/maintenance', methods=['get', 'post'])
-@app.route('/maintenance/<pump>', methods=['get', 'post'])
+        return redirect(url_for('maintenance', pump=pump))
+    flash('Grease pressure Must be a number please try again')
+    return redirect(url_for('maintenance', pump=pump))
+
+
+@app.route('/generic_maintenance', methods=['GET', 'POST'])
+@login_required
+def generic_maintenance():
+    search_form = forms.SearchForm()
+    return render_template('generic_maintenance.html', search_form=search_form)
+
+@app.route('/maintenance', methods=['GET', 'POST'])
+@app.route('/maintenance/<pump>', methods=['GET', 'POST'])
 @login_required
 def maintenance(pump=None):
     """Logs maintenance into database"""
@@ -459,20 +506,10 @@ def maintenance(pump=None):
 
         messages.append(message)
 
-    if grease_form.validate_on_submit():
-        try:
-            models.maintenance.insert({'Id': uuid.uuid4().hex,'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
-                                               'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': int(parts_form_vs.suction_valves.data), 'suction_seats': int(parts_form_vs.suction_seats.data),
-                                               'discharge_valves': int(parts_form_vs.discharge_valves.data), 'discharge_seats': int(parts_form_vs.discharge_seats.data),
-                                               'five_packing': int(parts_form_packing.five_packing.data),
-                                               'four_point_five_packing': int(parts_form_packing.four_point_five_packing.data), 'grease_pressure': int(grease_form.grease_psi.data),
-                                               'Treaters': [models.treaters.search('Name', grease_form.treater_name.data)[0]['id']],
-                                               'Crew': current_user.crew})
-            flash('Maintenance logged for {}'.format(pump))
-        except IndexError:
-           flash('{} is not an authorized name. Contact admin for help.'.format(grease_form.treater_name.data))
 
-        return redirect(url_for('maintenance', pump=pump))
+    maintenance_form.maintenance_type.data = 'select maintenance'
+
+
 
     return render_template('maintenance.html', maintenance_form=maintenance_form,
                            hole_form=hole_form, search_form=search_form, parts_form_vs=parts_form_vs,
