@@ -3,13 +3,14 @@ from flask import (Flask, g, render_template, flash, redirect, url_for,
 import json
 from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user,
-                             login_required, current_user)
+                         login_required, current_user)
 from resources.transit import transit_api
 from resources.get_equipment_list import get_api
 from resources.get_treaters import get_treaters
 from resources.move_equipment import move_equipment
 from resources.log_maintenance import log_maintenance
 from resources.update_layout import update_layout
+from resources.update_pump_hours import update_pump_hours
 from flask_cors import CORS, cross_origin
 
 import forms
@@ -18,13 +19,12 @@ import os
 import re
 import uuid
 from datetime import datetime
-from dateutil import tz
 
 
 THREADED = True
 DEBUG = True
 PORT = 8000
-HOST = '192.168.86.26'
+HOST = '192.168.1.173'
 
 app = Flask(__name__)
 app.register_blueprint(transit_api)
@@ -33,6 +33,7 @@ app.register_blueprint(get_treaters)
 app.register_blueprint(move_equipment)
 app.register_blueprint(log_maintenance)
 app.register_blueprint(update_layout)
+app.register_blueprint(update_pump_hours)
 CORS(app)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
 
@@ -61,12 +62,14 @@ def hash_processor():
 def search_field(field, data, table):
     return table.search(field, data)[0]['fields']
 
+
 def get_saved_data():
     try:
         data = json.loads(request.cookies.get('user_input'))
     except TypeError:
         data = {}
     return data
+
 
 def convertTime(time):
     from_zone = tz.tzutc()
@@ -76,23 +79,23 @@ def convertTime(time):
     central = utc.astimezone(to_zone)
     return central
 
+
 def move(equipment_field, crew_field, supervisor, message):
     """Moves a piece of equipment to specified crew in database.
     Changes 'crew' column in database to specified field"""
     models.equipment.update_by_field('UnitNumber', equipment_field.data, {'Crew': 'pending'})
     flash('{} moved to {} crew'.format(equipment_field.data, crew_field.data))
-    models.movement.insert({'Movement_Id': uuid.uuid4().hex,'User': supervisor, 'message': '{} has moved {} to {} crew'.format(
+    models.movement.insert({'Movement_Id': uuid.uuid4().hex, 'User': supervisor, 'message': '{} has moved {} to {} crew'.format(
         supervisor, equipment_field.data, crew_field.data), 'inTransit': 'checked', 'UnitNumber': equipment_field.data,
-                           'CrewTransfer': crew_field.data, 'CrewFrom': current_user.crew, 'details': message, 'Treaters': supervisor}, typecast=True)
+        'CrewTransfer': crew_field.data, 'CrewFrom': current_user.crew, 'details': message, 'Treaters': supervisor}, typecast=True)
 
 
 @login_manager.user_loader
 def load_user(userid):
     user_data = search_field('id', userid, models.users)
     user = models.User(user_data['id'], user_data['UserName'],
-        str.encode(user_data['Password']), user_data['Crew'])
+                       str.encode(user_data['Password']), user_data['Crew'])
     return user
-
 
 
 @app.before_request
@@ -134,7 +137,7 @@ def login():
         try:
             user_data = search_field('UserName', form.username.data, models.users)
             user = models.User(user_data['id'], user_data['UserName'],
-                str.encode(user_data['Password']), user_data['Crew'])
+                               str.encode(user_data['Password']), user_data['Crew'])
         except models.DoesNotExist:
             flash('Your username or password does not match', 'error')
         if check_password_hash(user.password, form.password.data):
@@ -180,7 +183,7 @@ def main(crew=None):
     data = get_saved_data()
     data.update(dict(request.form.items()))
     response.set_cookie('user_input', json.dumps(data))
-    movement_stream = models.movement.get_all(maxRecords=10, sort=[('timestamp', 'desc'),])
+    movement_stream = models.movement.get_all(maxRecords=10, sort=[('timestamp', 'desc'), ])
     if crew is not None and current_user.is_admin:
         pump_numbers = models.create_list(crew, 'pump')
         blender_numbers = models.create_list(crew, 'blender')
@@ -243,7 +246,8 @@ def move_pump(crew=None):
             return response
         if current_user.is_admin:
             if models.check_crew(pump_form.pumps_crew.data, pump_form.pumps.data):
-                flash('{} is already on {} crew.'.format(pump_form.pumps.data, pump_form.pumps_crew.data))
+                flash('{} is already on {} crew.'.format(
+                    pump_form.pumps.data, pump_form.pumps_crew.data))
                 return response
             else:
                 move(pump_form.pumps, pump_form.pumps_crew, treater_name, movement_message)
@@ -285,14 +289,16 @@ def move_blender(crew=None):
     if blender_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(blender_form.blenders_crew.data, blender_form.blenders.data):
-                flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
+                flash('{} is already on {} crew.'.format(
+                    blender_form.blenders.data, blender_form.blenders_crew.data))
                 return response
             else:
                 move(blender_form.blenders, blender_form.blenders_crew, treater_name, movement_message)
                 return response
 
         elif blender_form.blenders_crew.data == current_user.crew:
-            flash('{} is already on {} crew.'.format(blender_form.blenders.data, blender_form.blenders_crew.data))
+            flash('{} is already on {} crew.'.format(
+                blender_form.blenders.data, blender_form.blenders_crew.data))
             return response
         else:
             move(blender_form.blenders, blender_form.blenders_crew, treater_name, movement_message)
@@ -300,6 +306,7 @@ def move_blender(crew=None):
     else:
         response = redirect(url_for('main'))
         return response
+
 
 @app.route('/move_missile', methods=['POST', 'GET'])
 @app.route('/move_missile/<crew>', methods=['POST', 'GET'])
@@ -322,14 +329,16 @@ def move_missile(crew=None):
     if missile_form.validate_on_submit():
         if current_user.is_admin:
             if models.check_crew(missile_form.missiles_crew.data, missile_form.missiles.data):
-                flash('{} is already on {} crew.'.format(missile_form.missiles.data, missile_form.missiles_crew.data))
+                flash('{} is already on {} crew.'.format(
+                    missile_form.missiles.data, missile_form.missiles_crew.data))
                 return response
             else:
                 move(missile_form.missiles, missile_form.missiles_crew, treater_name, movement_message)
                 return response
 
         elif missile_form.missiles_crew.data == current_user.crew:
-            flash('{} is already on {} crew.'.format(missile_form.missiles.data, missile_form.missiles_crew.data))
+            flash('{} is already on {} crew.'.format(
+                missile_form.missiles.data, missile_form.missiles_crew.data))
             return response
         else:
             move(missile_form.missiles, missile_form.missiles_crew, treater_name, movement_message)
@@ -364,7 +373,8 @@ def move_hydration(crew=None):
                                                          hydration_form.hydrations_crew.data))
                 return response
             else:
-                move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name, movement_message)
+                move(hydration_form.hydrations, hydration_form.hydrations_crew,
+                     treater_name, movement_message)
                 return response
 
         elif hydration_form.hydrations_crew.data == current_user.crew:
@@ -372,7 +382,8 @@ def move_hydration(crew=None):
                                                      hydration_form.hydrations_crew.data))
             return response
         else:
-            move(hydration_form.hydrations, hydration_form.hydrations_crew, treater_name, movement_message)
+            move(hydration_form.hydrations, hydration_form.hydrations_crew,
+                 treater_name, movement_message)
             return response
     else:
         response = redirect(url_for('main'))
@@ -425,7 +436,7 @@ def move_float(crew=None):
 def admin():
     search_form = forms.SearchForm()
     admin_form = forms.AdminForm()
-    movement_stream = models.movement.get_all(maxRecords=10, sort=[('timestamp', 'desc'),])
+    movement_stream = models.movement.get_all(maxRecords=10, sort=[('timestamp', 'desc'), ])
 
     if admin_form.validate_on_submit():
         return redirect(url_for('main', crew=admin_form.crew.data))
@@ -447,10 +458,12 @@ def search():
             query = models.equipment.search('UnitNumber', search_form.search.data)
             flash('{} is on {} crew'.format(search_form.search.data, query[0]['fields']['Crew']))
         except:
-            flash('{} is not in the system. If this is a mistake please inform admin.'.format(search_form.search.data))
+            flash('{} is not in the system. If this is a mistake please inform admin.'.format(
+                search_form.search.data))
         return response
     else:
         return response
+
 
 @app.route('/submit_maint', methods=['GET', 'POST'])
 @app.route('/submit_maint/<pump>', methods=['GET', 'POST'])
@@ -464,16 +477,17 @@ def submit_maint(pump=None):
     grease_form = forms.GreaseForm()
     if grease_form.validate_on_submit():
         try:
-            models.maintenance.insert({'Id': uuid.uuid4().hex,'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
-                                               'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': int(parts_form_vs.suction_valves.data), 'suction_seats': int(parts_form_vs.suction_seats.data),
-                                               'discharge_valves': int(parts_form_vs.discharge_valves.data), 'discharge_seats': int(parts_form_vs.discharge_seats.data),
-                                               'five_packing': int(parts_form_packing.five_packing.data),
-                                               'four_point_five_packing': int(parts_form_packing.four_point_five_packing.data), 'grease_pressure': int(grease_form.grease_psi.data),
-                                               'Treaters': [models.treaters.search('Name', grease_form.treater_name.data)[0]['id']],
-                                               'Crew': current_user.crew})
+            models.maintenance.insert({'Id': uuid.uuid4().hex, 'MaintenanceType': maintenance_form.maintenance_type.data, 'Hole': hole_form.Hole.data,
+                                       'UnitNumber': [models.equipment.search('UnitNumber', pump)[0]['id']], 'suction_valves': int(parts_form_vs.suction_valves.data), 'suction_seats': int(parts_form_vs.suction_seats.data),
+                                       'discharge_valves': int(parts_form_vs.discharge_valves.data), 'discharge_seats': int(parts_form_vs.discharge_seats.data),
+                                       'five_packing': int(parts_form_packing.five_packing.data),
+                                       'four_point_five_packing': int(parts_form_packing.four_point_five_packing.data), 'grease_pressure': int(grease_form.grease_psi.data),
+                                       'Treaters': [models.treaters.search('Name', grease_form.treater_name.data)[0]['id']],
+                                       'Crew': current_user.crew})
             flash('Maintenance logged for {}'.format(pump))
         except IndexError:
-           flash('{} is not an authorized name. Contact admin for help.'.format(grease_form.treater_name.data))
+            flash('{} is not an authorized name. Contact admin for help.'.format(
+                grease_form.treater_name.data))
 
         return redirect(url_for('maintenance', pump=pump))
     flash('Grease pressure Must be a number please try again')
@@ -486,6 +500,7 @@ def generic_maintenance():
     search_form = forms.SearchForm()
     return render_template('generic_maintenance.html', search_form=search_form)
 
+
 @app.route('/maintenance', methods=['GET', 'POST'])
 @app.route('/maintenance/<pump>', methods=['GET', 'POST'])
 @login_required
@@ -497,19 +512,18 @@ def maintenance(pump=None):
     parts_form_vs = forms.PartsFormVS()
     parts_form_packing = forms.PartsFormPacking()
     grease_form = forms.GreaseForm()
-    maintenance_stream = models.maintenance.search('UnitNumber', pump, sort=[('Timestamp', 'desc'),])
+    maintenance_stream = models.maintenance.search(
+        'UnitNumber', pump, sort=[('Timestamp', 'desc'), ])
     messages = []
     for maint_log in maintenance_stream:
         message = '{} did {} on {} Hole {} on {}'.format(models.treaters.get(maint_log['fields']['Treaters'][0])['fields']['Name'], maint_log['fields']['MaintenanceType'],
-                                                               models.equipment.get(maint_log['fields']['UnitNumber'][0])['fields']['UnitNumber'], maint_log['fields']['Hole'],
-                                                               convertTime(maint_log['fields']['Timestamp']))
+                                                         models.equipment.get(maint_log['fields']['UnitNumber'][0])[
+            'fields']['UnitNumber'], maint_log['fields']['Hole'],
+            convertTime(maint_log['fields']['Timestamp']))
 
         messages.append(message)
 
-
     maintenance_form.maintenance_type.data = 'select maintenance'
-
-
 
     return render_template('maintenance.html', maintenance_form=maintenance_form,
                            hole_form=hole_form, search_form=search_form, parts_form_vs=parts_form_vs,

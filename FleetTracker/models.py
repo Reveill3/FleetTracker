@@ -3,22 +3,26 @@ from airtable import Airtable
 from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin
 from peewee import *
-import pandas as pd
 import sqlite3
-from sqlalchemy import create_engine
 import uuid
 
 DATABASE = SqliteDatabase('Fleet.db')
 
-equipment = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Equipment', api_key='keyVE2OTPcmyTURGm')
-movement = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Movement', api_key='keyVE2OTPcmyTURGm')
-users = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Users', api_key='keyVE2OTPcmyTURGm')
-maintenance = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Maintenance', api_key='keyVE2OTPcmyTURGm')
-treaters = Airtable(base_key='appUv95IdpXpBkJ96',table_name='Treaters', api_key='keyVE2OTPcmyTURGm')
+equipment = Airtable(base_key='appUv95IdpXpBkJ96',
+                     table_name='Equipment', api_key='keyVE2OTPcmyTURGm')
+movement = Airtable(base_key='appUv95IdpXpBkJ96',
+                    table_name='Movement', api_key='keyVE2OTPcmyTURGm')
+users = Airtable(base_key='appUv95IdpXpBkJ96', table_name='Users', api_key='keyVE2OTPcmyTURGm')
+maintenance = Airtable(base_key='appUv95IdpXpBkJ96',
+                       table_name='Maintenance', api_key='keyVE2OTPcmyTURGm')
+treaters = Airtable(base_key='appUv95IdpXpBkJ96',
+                    table_name='Treaters', api_key='keyVE2OTPcmyTURGm')
+
 
 def add_user(username, crew, password, is_admin=False):
-    users.insert({'id': uuid.uuid4().hex,'UserName': username, 'Crew': crew,
-    'Password': generate_password_hash(password).decode("utf-8"), 'is_admin': is_admin}, typecast=True)
+    users.insert({'id': uuid.uuid4().hex, 'UserName': username, 'Crew': crew,
+                  'Password': generate_password_hash(password).decode("utf-8"), 'is_admin': is_admin}, typecast=True)
+
 
 def check_crew(crew, unit_number):
     """ Checks to see if the current piece of equipment selected is
@@ -34,8 +38,10 @@ def create_list(crew, equipment_type):
 
     equipment_list = []
     for unit in equipment_filter:
-        equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['Standby'], unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement']))
+        equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['Standby'],
+                               unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement']))
     return equipment_list
+
 
 class User(UserMixin):
     def __init__(self, id, username, password, crew):
