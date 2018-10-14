@@ -17,6 +17,8 @@ maintenance = Airtable(base_key='appUv95IdpXpBkJ96',
                        table_name='Maintenance', api_key='keyVE2OTPcmyTURGm')
 treaters = Airtable(base_key='appUv95IdpXpBkJ96',
                     table_name='Treaters', api_key='keyVE2OTPcmyTURGm')
+crews = Airtable(base_key='appUv95IdpXpBkJ96',
+                    table_name='Crews', api_key='keyVE2OTPcmyTURGm')
 
 
 def add_user(username, crew, password, is_admin=False):
