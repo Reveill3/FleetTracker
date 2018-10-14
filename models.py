@@ -6,7 +6,6 @@ from peewee import *
 import sqlite3
 import uuid
 
-DATABASE = SqliteDatabase('Fleet.db')
 
 equipment = Airtable(base_key='appUv95IdpXpBkJ96',
                      table_name='Equipment', api_key='keyVE2OTPcmyTURGm')
