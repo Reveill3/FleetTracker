@@ -107,7 +107,6 @@ def before_request():
 @app.after_request
 def after_request(response):
     """Close the database connection after each request."""
-    g.db.close()
     return response
 
 @app.route('/')
