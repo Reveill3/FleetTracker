@@ -8,9 +8,9 @@ class UpdatePumpHours(Resource):
 
     def post(self):
         load_data = request.get_json()
-        for key, value in load_data.items():
-            models.equipment.update_by_field(
-                'UnitNumber', key, {'pump_hours': value}, typecast=True)
+    for equipment in load_data:
+        models.equipment.update_by_field(
+            'UnitNumber', equipment['unitnumber'], {'pump_hours': equipment['pumphours']}, typecast=True)
 
 
 update_pump_hours = Blueprint('resources.update_pump_hours',  __name__)
