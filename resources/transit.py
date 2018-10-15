@@ -78,9 +78,9 @@ class TransitList(Resource):
             unit = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']
             unit_type = unit['Type']
             if unit_type == 'pump' or unit_type == 'blender':
-                standby = True
+                standby = "True"
             else:
-                standby = False
+                standby = "False"
             if movement['yours']:
                 models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {'Crew': [movement['transferfrom']], 'Standby': standby})
                 models.movement.delete_by_field('Movement_Id', movement['id'])
