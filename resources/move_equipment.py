@@ -10,7 +10,7 @@ import uuid
 def move(equipment_field, transfer_to, supervisor, message, transfer_from):
     """Moves a piece of equipment to specified crew in database.
     Changes 'crew' column in database to specified field"""
-    models.equipment.update_by_field('UnitNumber', equipment_field, {'Crew': ['rec0Q6Z9R2isNg34V']})
+    models.equipment.update_by_field('UnitNumber', equipment_field, {'Crew': ['recNZ0IqxyzFcevwg']})
     models.movement.insert({'Movement_Id': uuid.uuid4().hex, 'message': '{} has moved {} to {} crew'.format(
         supervisor, equipment_field, transfer_to), 'inTransit': 'checked', 'UnitNumber': equipment_field,
                            'CrewTransfer': transfer_to, 'CrewFrom': transfer_from, 'details': message, 'Treaters': supervisor}, typecast=True)
