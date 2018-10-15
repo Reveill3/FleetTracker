@@ -76,13 +76,16 @@ class TransitList(Resource):
         for movement in movements_to_cancel:
             models.movement.update_by_field('Movement_Id', movement['id'], {'inTransit': 'not'})
             unit = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']
-            unit_data = (unit['UnitNumber'], unit['Standby'],
-                                   unit['Station'], unit['Maintenance'], unit['Movement'], unit['pump_hours'])
+            unit_type = unit['Type']
+            if unit_type == 'pump' or unit_type == 'blender':
+                standby = True
+            else:
+                standby = False
             if movement['yours']:
-                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {'Crew': [movement['transferfrom']], 'Standby': 'True'})
+                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {'Crew': [movement['transferfrom']], 'Standby': standby})
                 models.movement.delete_by_field('Movement_Id', movement['id'])
             else:
-                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {'Crew': [movement['transferTo']], 'Standby': 'True'})
+                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {'Crew': [movement['transferTo']], 'Standby': standby})
 
 
 
