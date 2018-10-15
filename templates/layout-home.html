@@ -50,9 +50,7 @@
 
         {% block content %}{% endblock %}
     </div><!--/.container-->
-    {% if current_user.is_authenticated %}
     <script src={{ url_for('static', filename='main.7240065a.js') }}></script>
-  {% endif %}
 </div><!--/.wrap-->
 
 </body>

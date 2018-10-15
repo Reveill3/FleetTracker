@@ -150,7 +150,7 @@ def search():
     if current_user.is_admin:
         response = make_response(redirect(url_for('admin')))
     else:
-        response = make_response(redirect(url_for('home')))
+        response = make_response(redirect(url_for('main')))
     if search_form.validate_on_submit():
         try:
             query = models.equipment.search('UnitNumber', search_form.search.data)
