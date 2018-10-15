@@ -120,6 +120,11 @@ def main():
     search_form = forms.SearchForm()
     return render_template('index.html', search_form=search_form, crew=current_user.crew)
 
+@app.route('/home')
+def home():
+    search_form = forms.SearchForm()
+    return render_template('home.html', search_form=search_form)
+
 
 
 
