@@ -52,7 +52,7 @@ class GetEquipmentList(Resource):
                 'station': equipment[2],
                 'maintenance': maint_messages,
                 'movement': move_messages,
-                'pump_hours': pump_hours
+                'pump_hours': pump_hours,
                 'hole_1_life': hole_1_life,
                 'hole_2_life': hole_2_life,
                 'hole_3_life': hole_3_life,
