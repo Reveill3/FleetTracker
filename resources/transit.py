@@ -12,7 +12,7 @@ class TransitList(Resource):
         for movement in movements:
             unit = models.equipment.get(movement['fields']['UnitNumber'][0])
             equipment = (unit['fields']['UnitNumber'], unit['fields']['Standby'],
-                                   unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement'], unit['fields']['pump_hours'])
+                         unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement'], unit['fields']['pump_hours'])
             maint_messages = []
             move_messages = []
             hole_1_hours = ['0']
@@ -43,8 +43,8 @@ class TransitList(Resource):
             hole_4_life = int(pump_hours) - int(hole_4_hours[-1])
             hole_5_life = int(pump_hours) - int(hole_5_hours[-1])
             models.equipment.update_by_field('UnitNumber', equipment[0], {'hole_1_life': hole_1_life,
-                                                                        'hole_2_life': hole_2_life, 'hole_3_life': hole_3_life,
-                                                                        'hole_4_life': hole_4_life, 'hole_5_life': hole_5_life})
+                                                                          'hole_2_life': hole_2_life, 'hole_3_life': hole_3_life,
+                                                                          'hole_4_life': hole_4_life, 'hole_5_life': hole_5_life})
             for move_log in move_logs:
                 move_messages.append([models.movement.get(move_log)['fields']['message']])
             jsondict = {
@@ -57,23 +57,23 @@ class TransitList(Resource):
                 'details': movement['fields']['details'],
                 'type': unit['fields']['Type'],
                 'unit': {
-                        'unitnumber': equipment[0],
-                        'standby': True,
-                        'station': equipment[2],
-                        'maintenance': maint_messages,
-                        'movement': move_messages,
-                        'hole_1_life': hole_1_life,
-                        'hole_2_life': hole_2_life,
-                        'hole_3_life': hole_3_life,
-                        'hole_4_life': hole_4_life,
-                        'hole_5_life': hole_5_life,
-                        'previous_hours': {'hole_1': int(hole_1_hours[-1]),
-                                            'hole_2': int(hole_2_hours[-1]),
-                                            'hole_3': int(hole_3_hours[-1]),
-                                            'hole_4': int(hole_4_hours[-1]),
-                                            'hole_5': int(hole_5_hours[-1])
-                                            }
-            }
+                    'unitnumber': equipment[0],
+                    'standby': True,
+                    'station': equipment[2],
+                    'maintenance': maint_messages,
+                    'movement': move_messages,
+                    'hole_1_life': hole_1_life,
+                    'hole_2_life': hole_2_life,
+                    'hole_3_life': hole_3_life,
+                    'hole_4_life': hole_4_life,
+                    'hole_5_life': hole_5_life,
+                    'previous_hours': {'hole_1': int(hole_1_hours[-1]),
+                                       'hole_2': int(hole_2_hours[-1]),
+                                       'hole_3': int(hole_3_hours[-1]),
+                                       'hole_4': int(hole_4_hours[-1]),
+                                       'hole_5': int(hole_5_hours[-1]),
+                                       }
+                }}
             jsoncollection.append(jsondict)
         return jsonify(jsoncollection)
 
@@ -95,7 +95,6 @@ class TransitList(Resource):
             else:
                 models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {
                                                  'Crew': [movement['transferTo']], 'Standby': standby})
-
 
 
 transit_api = Blueprint('resources.transit', __name__)
