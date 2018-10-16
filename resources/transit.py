@@ -42,9 +42,9 @@ class TransitList(Resource):
             hole_3_life = int(pump_hours) - int(hole_3_hours[-1])
             hole_4_life = int(pump_hours) - int(hole_4_hours[-1])
             hole_5_life = int(pump_hours) - int(hole_5_hours[-1])
-            models.equipment.update_by_field('UnitNumber',equipment[0], {'hole_1_life': hole_1_life,
+            models.equipment.update_by_field('UnitNumber', equipment[0], {'hole_1_life': hole_1_life,
                                                                         'hole_2_life': hole_2_life, 'hole_3_life': hole_3_life,
-                                                                        'hole_4_life': hole_4_life, 'hole_5_life':hole_5_life})
+                                                                        'hole_4_life': hole_4_life, 'hole_5_life': hole_5_life})
             for move_log in move_logs:
                 move_messages.append([models.movement.get(move_log)['fields']['message']])
             jsondict = {
@@ -66,7 +66,13 @@ class TransitList(Resource):
                         'hole_2_life': hole_2_life,
                         'hole_3_life': hole_3_life,
                         'hole_4_life': hole_4_life,
-                        'hole_5_life': hole_5_life}
+                        'hole_5_life': hole_5_life,
+                        'previous_hours': {'hole_1': int(hole_1_hours[-1]),
+                                            'hole_2': int(hole_2_hours[-1]),
+                                            'hole_3': int(hole_3_hours[-1]),
+                                            'hole_4': int(hole_4_hours[-1]),
+                                            'hole_5': int(hole_5_hours[-1])
+                                            }
             }
             jsoncollection.append(jsondict)
         return jsonify(jsoncollection)
@@ -75,17 +81,20 @@ class TransitList(Resource):
         movements_to_cancel = request.get_json()
         for movement in movements_to_cancel:
             models.movement.update_by_field('Movement_Id', movement['id'], {'inTransit': 'not'})
-            unit = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[0]['fields']['UnitNumber'][0])['fields']
+            unit = models.equipment.get(models.movement.search('Movement_Id', movement['id'])[
+                                        0]['fields']['UnitNumber'][0])['fields']
             unit_type = unit['Type']
             if unit_type == 'pump' or unit_type == 'blender':
                 standby = "True"
             else:
                 standby = "False"
             if movement['yours']:
-                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {'Crew': [movement['transferfrom']], 'Standby': standby})
+                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {
+                                                 'Crew': [movement['transferfrom']], 'Standby': standby})
                 models.movement.delete_by_field('Movement_Id', movement['id'])
             else:
-                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {'Crew': [movement['transferTo']], 'Standby': standby})
+                models.equipment.update_by_field('UnitNumber', unit['UnitNumber'], {
+                                                 'Crew': [movement['transferTo']], 'Standby': standby})
 
 
 
