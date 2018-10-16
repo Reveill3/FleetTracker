@@ -56,6 +56,7 @@ class TransitList(Resource):
                 'id': movement['fields']['Movement_Id'],
                 'details': movement['fields']['details'],
                 'type': unit['fields']['Type'],
+                'driver': movement['fields']['Driver'],
                 'unit': {
                     'unitnumber': equipment[0],
                     'standby': True,

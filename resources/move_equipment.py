@@ -7,19 +7,19 @@ import uuid
 
 
 
-def move(equipment_field, transfer_to, supervisor, message, transfer_from):
+def move(equipment_field, transfer_to, supervisor, message, transfer_from, driver):
     """Moves a piece of equipment to specified crew in database.
     Changes 'crew' column in database to specified field"""
     models.equipment.update_by_field('UnitNumber', equipment_field, {'Crew': ['recNZ0IqxyzFcevwg']})
     models.movement.insert({'Movement_Id': uuid.uuid4().hex, 'message': '{} has moved {} to {} crew'.format(
         supervisor, equipment_field, transfer_to), 'inTransit': 'checked', 'UnitNumber': equipment_field,
-                           'CrewTransfer': transfer_to, 'CrewFrom': transfer_from, 'details': message, 'Treaters': supervisor}, typecast=True)
+                           'CrewTransfer': transfer_to, 'CrewFrom': transfer_from, 'details': message, 'Treaters': supervisor, 'Driver': driver}, typecast=True)
 
 class MoveEquipment(Resource):
 
     def post(self):
         load_data = request.get_json()
-        move(load_data['equipment'], load_data['transferTo'], load_data['treater'], load_data['reason'], load_data['crewFrom'])
+        move(load_data['equipment'], load_data['transferTo'], load_data['treater'], load_data['reason'], load_data['crewFrom'], load_data['driver'])
         return jsonify('Movement Logged')
 
 move_equipment = Blueprint('resources.move_equipment', __name__)
