@@ -6,7 +6,7 @@ import models
 class GetTreaters(Resource):
 
     def get(self):
-        treaters = models.treaters.get_all()
+        treaters = models.treaters.get_all(view='Grid view')
         treater_names = []
         crews = []
         for treater in treaters:
