@@ -169,7 +169,7 @@ def logout():
     flash('You have been logged out.')
     return redirect(url_for('home'))
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # models.initialize()
     # models.initialize_csv()
     # try:
