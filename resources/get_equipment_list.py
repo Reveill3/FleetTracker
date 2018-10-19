@@ -23,15 +23,15 @@ class GetEquipmentList(Resource):
 
             for maint_log in maint_logs:
                 log_data = models.maintenance.get(maint_log)
-                if log_data['fields']['Hole'] == '1':
+                if log_data['fields']['Hole'] == '1' and log_data['fields']['MaintenanceType'] == 'valves & seats':
                     hole_1_hours.append(log_data['fields']['pump_hours'])
-                if log_data['fields']['Hole'] == '2':
+                if log_data['fields']['Hole'] == '2' and log_data['fields']['MaintenanceType'] == 'valves & seats':
                     hole_2_hours.append(log_data['fields']['pump_hours'])
-                if log_data['fields']['Hole'] == '3':
+                if log_data['fields']['Hole'] == '3' and log_data['fields']['MaintenanceType'] == 'valves & seats':
                     hole_3_hours.append(log_data['fields']['pump_hours'])
-                if log_data['fields']['Hole'] == '4':
+                if log_data['fields']['Hole'] == '4' and log_data['fields']['MaintenanceType'] == 'valves & seats':
                     hole_4_hours.append(log_data['fields']['pump_hours'])
-                if log_data['fields']['Hole'] == '5':
+                if log_data['fields']['Hole'] == '5' and log_data['fields']['MaintenanceType'] == 'valves & seats':
                     hole_5_hours.append(log_data['fields']['pump_hours'])
                 maint_messages.append([log_data['fields']['Message']])
             hole_1_life = int(pump_hours) - int(hole_1_hours[-1])
