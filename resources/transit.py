@@ -48,7 +48,7 @@ class TransitList(Resource):
             for move_log in move_logs:
                 move_messages.append([models.movement.get(move_log)['fields']['message']])
             jsondict = {
-                'pump_hours': unit['fields']['pump_hours']
+                'pump_hours': unit['fields']['pump_hours'],
                 'user': movement['fields']['Treaters'],
                 'unitnumber': unit['fields']['UnitNumber'],
                 'Time': movement['fields']['timestamp'],
