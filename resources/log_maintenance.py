@@ -107,7 +107,7 @@ def update_maintenance(hole, load_data, genericParts=False):
             'gland_nut': load_data['Gland Nut'],
             'manifold_o_ring': load_data['Manifold O-ring'],
             'pony_rod_adapter_bolts': load_data['Pony Rod Adapter Bolts'],
-            'grease_check_valve': load_data['SPM Check Valve Kit'],
+            'grease_check_valve': load_data['Grease Check Valve'],
             'spacer_adapter': load_data['Spacer/Adapter'],
             'spring_keeper': load_data['Spring Keeper'],
             'spring_keeper_pin': load_data['Spring Keeper Pin'],
