@@ -7,8 +7,12 @@ class DeleteNote(Resource):
 
     def post(self):
         load_data = request.get_json()
-        to_delete = models.notes.search('Unit Number', load_data['unitnumber'])[0]
-        models.notes.delete(to_delete['id'])
+        if load_data['recId'] == 'new':
+            to_delete = models.notes.search('Note Number', load_data['noteNum'])[0]['id']
+            models.notes.delete(to_delete)
+        else:
+            models.notes.delete(load_data['recId'])
+
         return jsonify('Update Success')
 
 delete_note = Blueprint('resources.delete_note', __name__)

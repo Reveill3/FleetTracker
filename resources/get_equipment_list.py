@@ -9,6 +9,11 @@ class GetEquipmentList(Resource):
         load_data = request.get_json()
         equipment_list = models.create_list(load_data['crew'], load_data['type'])
         jsoncollection = []
+        max_list = []
+        total_notes = models.notes.get_all(fields=['Note Number'])
+        for note in total_notes:
+            max_list.append(note['fields']['Note Number'])
+        max_note_number = max(max_list)
         for equipment in equipment_list:
             maint_messages = []
             move_messages = []
@@ -26,6 +31,8 @@ class GetEquipmentList(Resource):
                 note_data = models.notes.get(note)
                 treater = models.treaters.get(note_data['fields']['Supervisor Name'][0])['fields']['Name']
                 notes_note.append({
+                    'totalNotes': max_note_number,
+                    'noteNum': note_data['fields']['Note Number'],
                     'id': note_data['id'],
                     'title': note_data['fields']['Title'],
                     'details': note_data['fields']['Details'],
