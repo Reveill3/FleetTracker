@@ -17,7 +17,7 @@ class AddNote(Resource):
         title = load_data['title']
         details = load_data['details']
         models.notes.insert({
-        'Note Number': max_note_number,
+        'Note Number': max_note_number + 1,
         'Title': title,
         'Details': details,
         'Unit Number': load_data['unitnumber'],
