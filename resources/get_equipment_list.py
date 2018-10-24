@@ -12,6 +12,7 @@ class GetEquipmentList(Resource):
         for equipment in equipment_list:
             maint_messages = []
             move_messages = []
+            notes_note = []
             hole_1_hours = ['0']
             hole_2_hours = ['0']
             hole_3_hours = ['0']
@@ -20,7 +21,16 @@ class GetEquipmentList(Resource):
             maint_logs = equipment[3]
             move_logs = equipment[4]
             pump_hours = equipment[5]
-
+            notes = equipment[6]
+            for note in notes:
+                note_data = models.notes.get(note)
+                treater = models.treaters.get(note_data['fields']['Supervisor Name'][0])['fields']['Name']
+                notes_note.append({
+                    'id': note_data['id'],
+                    'title': note_data['fields']['Title'],
+                    'details': note_data['fields']['Details'],
+                    'treater': treater
+                })
             for maint_log in maint_logs:
                 log_data = models.maintenance.get(maint_log)
                 if log_data['fields']['Hole'] == '1' and log_data['fields']['MaintenanceType'] == 'valves & seats':
@@ -63,7 +73,8 @@ class GetEquipmentList(Resource):
                                     'hole_3': int(hole_3_hours[-1]),
                                     'hole_4': int(hole_4_hours[-1]),
                                     'hole_5': int(hole_5_hours[-1]),
-                                    }
+                                    },
+                'notes': notes_note
             }
             jsoncollection.append(jsondict)
         sorted_by_station = sorted(jsoncollection, key=lambda k: k['station'])

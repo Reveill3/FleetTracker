@@ -11,6 +11,8 @@ from resources.move_equipment import move_equipment
 from resources.log_maintenance import log_maintenance
 from resources.update_layout import update_layout
 from resources.update_pump_hours import update_pump_hours
+from resources.delete_note import delete_note
+from resources.add_note import add_note
 from flask_cors import CORS, cross_origin
 
 import forms
@@ -34,6 +36,8 @@ app.register_blueprint(move_equipment)
 app.register_blueprint(log_maintenance)
 app.register_blueprint(update_layout)
 app.register_blueprint(update_pump_hours)
+app.register_blueprint(add_note)
+app.register_blueprint(delete_note)
 CORS(app)
 app.secret_key = 'auoesh.bouoastuh.43,uoausoehuosth3ououea.auoub!'
 
@@ -169,7 +173,7 @@ def logout():
     flash('You have been logged out.')
     return redirect(url_for('home'))
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
     # models.initialize()
     # models.initialize_csv()
     # try:
@@ -182,4 +186,4 @@ def logout():
     #     )
     # except ValueError:
     #     pass
-    # app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
+    app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)

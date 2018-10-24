@@ -18,6 +18,8 @@ treaters = Airtable(base_key='appUv95IdpXpBkJ96',
                     table_name='Treaters', api_key='keyVE2OTPcmyTURGm')
 crews = Airtable(base_key='appUv95IdpXpBkJ96',
                     table_name='Crews', api_key='keyVE2OTPcmyTURGm')
+notes = Airtable(base_key='appUv95IdpXpBkJ96',
+                    table_name='Notes', api_key='keyVE2OTPcmyTURGm')
 
 
 def add_user(username, crew, password, is_admin=False):
@@ -40,7 +42,7 @@ def create_list(crew, equipment_type):
     equipment_list = []
     for unit in equipment_filter:
         equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['Standby'],
-                               unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement'], unit['fields']['pump_hours']))
+                               unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement'], unit['fields']['pump_hours'], unit['fields']['Notes']))
     return equipment_list
 
 
