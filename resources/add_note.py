@@ -13,6 +13,7 @@ class AddNote(Resource):
         details = load_data['details']
         print(load_data['supervisor'])
         models.notes.insert({
+        'Note Number': load_data['number'],
         'Title': title,
         'Details': details,
         'Unit Number': load_data['unitnumber'],

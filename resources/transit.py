@@ -9,12 +9,18 @@ class TransitList(Resource):
     def get(self):
         movements = models.movement.search('inTransit', 'checked')
         jsoncollection = []
+        max_list = []
+        total_notes = models.notes.get_all(fields=['Note Number'])
+        for note in total_notes:
+            max_list.append(note['fields']['Note Number'])
+        max_note_number = max(max_list)
         for movement in movements:
             unit = models.equipment.get(movement['fields']['UnitNumber'][0])
             equipment = (unit['fields']['UnitNumber'], unit['fields']['Standby'],
-                         unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement'], unit['fields']['pump_hours'])
+                         unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement'], unit['fields']['pump_hours'], unit['fields']['Notes'])
             maint_messages = []
             move_messages = []
+            notes_note = []
             hole_1_hours = ['0']
             hole_2_hours = ['0']
             hole_3_hours = ['0']
@@ -23,7 +29,18 @@ class TransitList(Resource):
             maint_logs = equipment[3]
             move_logs = equipment[4]
             pump_hours = equipment[5]
-
+            notes = equipment[6]
+            for note in notes:
+                note_data = models.notes.get(note)
+                treater = models.treaters.get(note_data['fields']['Supervisor Name'][0])['fields']['Name']
+                notes_note.append({
+                    'totalNotes': max_note_number,
+                    'noteNum': note_data['fields']['Note Number'],
+                    'id': note_data['id'],
+                    'title': note_data['fields']['Title'],
+                    'details': note_data['fields']['Details'],
+                    'treater': treater
+                })
             for maint_log in maint_logs:
                 log_data = models.maintenance.get(maint_log)
                 if log_data['fields']['Hole'] == '1':
@@ -74,7 +91,8 @@ class TransitList(Resource):
                                        'hole_3': int(hole_3_hours[-1]),
                                        'hole_4': int(hole_4_hours[-1]),
                                        'hole_5': int(hole_5_hours[-1]),
-                                       }
+                                       },
+                   'notes': notes_note
                 }}
             jsoncollection.append(jsondict)
         return jsonify(jsoncollection)
