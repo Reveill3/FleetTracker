@@ -9,11 +9,15 @@ class AddNote(Resource):
         load_data = request.get_json()
         treater = models.treaters.search('Name', load_data['supervisor'])[0]['id']
         unitnumber = models.equipment.search('UnitNumber', load_data['unitnumber'])[0]['id']
+        max_list = []
+        total_notes = models.notes.get_all(fields=['Note Number'])
+        for note in total_notes:
+            max_list.append(note['fields']['Note Number'])
+        max_note_number = max(max_list)
         title = load_data['title']
         details = load_data['details']
-        print(load_data['supervisor'])
         models.notes.insert({
-        'Note Number': load_data['number'],
+        'Note Number': max_note_number,
         'Title': title,
         'Details': details,
         'Unit Number': load_data['unitnumber'],
