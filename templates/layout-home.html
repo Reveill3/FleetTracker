@@ -1,11 +1,10 @@
-{% from 'macros.html' import render_field %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta id="my-data" data-name={{crew}}>
-    <title>{% block title %}FleetTracker{% endblock %}</title>
+    <title>FleetTracker</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
@@ -16,44 +15,6 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
-<div class="wrap">
-    <header>
-        <nav class="main-nav">
-            {% if current_user.is_authenticated %}
-            <div class="search">
-                <form action="{{ url_for('search') }}" method="POST">
-                    {% for field in search_form %}
-                    {{ render_field(field, div_class='search-text') }}
-                    {% endfor %}
-                    <button type="submit" class="btn btn-dark mt-2 mr-2">Search</button>
-                </form>
-            </div>
-            {% endif %}
-            <div class="nav">
-                <a href="{{ url_for('home') }}">Home</a>
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('logout') }}">Logout</a>
-                <a href="{{ url_for('main') }}">Equipment List</a>
-                {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-            </div>
-            {% endif %}
-        </nav>
-    </header>
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=True) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="flash">{{ message }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-    <div class="container-home">
-
-        {% block content %}{% endblock %}
-    </div><!--/.container-->
-    <script src={{ url_for('static', filename='main.16f30fe4.js') }}></script>
-</div><!--/.wrap-->
-
+    <script src={{ url_for('static', filename='main.bd69f4b8.js') }}></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import (Flask, g, render_template, flash, redirect, url_for,
+from flask import (Flask, g, jsonify, render_template, flash, redirect, url_for,
                    make_response, request)
 import json
 from flask_bcrypt import check_password_hash
@@ -116,7 +116,7 @@ def after_request(response):
 @app.route('/')
 def home():
     search_form = forms.SearchForm()
-    return render_template('home.html', search_form=search_form)
+    return render_template('layout-home.html', search_form=search_form)
 
 @login_required
 @app.route('/main')
@@ -126,26 +126,19 @@ def main():
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
-    form = forms.LoginForm()
-    search_form = forms.SearchForm()
-    if form.validate_on_submit():
-        try:
-            user_data = search_field('UserName', form.username.data, models.users)
-            user = models.User(user_data['id'], user_data['UserName'],
-                               str.encode(user_data['Password']), user_data['Crew'])
-        except models.DoesNotExist:
-            flash('Your username or password does not match', 'error')
-        if check_password_hash(user.password, form.password.data):
-            login_user(user)
-            flash("You've been logged in.", 'success')
-            if current_user.is_admin:
-                return redirect(url_for('admin'))
-            else:
-                return redirect(url_for('main'))
-        else:
-            flash('Your username or password is incorrect', 'error')
-        redirect(url_for('login'))
-    return render_template('login.html', form=form, search_form=search_form, authedUser=current_user)
+    parsed_request_data = request.get_json()
+    print(parsed_request_data)
+    try:
+        user_data = search_field('UserName', parsed_request_data[0]['username'], models.users)
+        user = models.User(user_data['id'], user_data['UserName'],
+                           str.encode(user_data['Password']), user_data['Crew'])
+    except IndexError:
+        return jsonify(authenticated = False)
+    if check_password_hash(user.password, parsed_request_data[0]['password']):
+        login_user(user)
+        return jsonify(authenticated = True,  crew=user_data['Crew'])
+    else:
+        return jsonify(authenticated = False)
 
 @app.route('/search', methods=["GET", "POST"])
 def search():
@@ -167,23 +160,22 @@ def search():
         return response
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     logout_user()
-    flash('You have been logged out.')
-    return redirect(url_for('home'))
+    return jsonify(loggedOut = True)
 
 # if __name__ == '__main__':
-# # #     # models.initialize()
-# # #     # models.initialize_csv()
-# # #     # try:
-# # #     #     models.User.create_user(
-# # #     #         username='alester',
-# # #     #         email='austin.lester@ftsi.com',
-# # #     #         password='password',
-# # #     #         admin=True,
-# # #     #         crew='red'
-# # #     #     )
-# # #     # except ValueError:
-# # #     #     pass
+# # # #     # models.initialize()
+# # # #     # models.initialize_csv()
+# # # #     # try:
+# # # #     #     models.User.create_user(
+# # # #     #         username='alester',
+# # # #     #         email='austin.lester@ftsi.com',
+# # # #     #         password='password',
+# # # #     #         admin=True,
+# # # #     #         crew='red'
+# # # #     #     )
+# # # #     # except ValueError:
+# # # #     #     pass
 #     app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)

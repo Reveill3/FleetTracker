@@ -53,3 +53,5 @@ class User(UserMixin):
         self.password = password
         self.is_admin = False
         self.crew = crew
+
+add_user('treater_motley', "motley",  'password')
