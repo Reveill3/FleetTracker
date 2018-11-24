@@ -165,7 +165,7 @@ def logout():
     logout_user()
     return jsonify(loggedOut = True)
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
 # # # #     # models.initialize()
 # # # #     # models.initialize_csv()
 # # # #     # try:
@@ -178,4 +178,4 @@ def logout():
 # # # #     #     )
 # # # #     # except ValueError:
 # # # #     #     pass
-#     app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
+    app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
