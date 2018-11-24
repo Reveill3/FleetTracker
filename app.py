@@ -115,14 +115,7 @@ def after_request(response):
 
 @app.route('/')
 def home():
-    search_form = forms.SearchForm()
-    return render_template('layout-home.html', search_form=search_form)
-
-@login_required
-@app.route('/main')
-def main():
-    search_form = forms.SearchForm()
-    return render_template('index.html', search_form=search_form, crew=current_user.crew)
+    return render_template('layout-home.html')
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
