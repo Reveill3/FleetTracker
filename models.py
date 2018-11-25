@@ -42,7 +42,7 @@ def create_list(crew, equipment_type):
     equipment_list = []
     for unit in equipment_filter:
         equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['Standby'],
-                               unit['fields']['Station'], unit['fields']['Maintenance'], unit['fields']['Movement'], unit['fields']['pump_hours'], unit['fields']['Notes']))
+                               unit['fields']['Station'], unit['fields']['Maintenance'][-10], unit['fields']['Movement'], unit['fields']['pump_hours'], unit['fields']['Notes']))
     return equipment_list
 
 
