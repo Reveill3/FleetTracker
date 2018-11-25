@@ -67,7 +67,7 @@ class GetEquipmentList(Resource):
                 'unitnumber': equipment[0],
                 'standby': equipment[1] == 'True',
                 'station': equipment[2],
-                'maintenance': maint_messages,
+                'maintenance': maint_messages[-3],
                 'movement': move_messages,
                 'pump_hours': pump_hours,
                 'hole_1_life': hole_1_life,
