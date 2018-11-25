@@ -40,7 +40,7 @@ def create_list(crew, equipment_type):
     equipment_filter = list(filter(lambda e: e['fields']['Type'] == equipment_type, color_filter))
 
     equipment_list = []
-    
+
     for unit in equipment_filter:
         if len(unit['fields']['Maintenance']) < 10:
             maint_log_list = unit['fields']['Maintenance']
@@ -58,5 +58,3 @@ class User(UserMixin):
         self.password = password
         self.is_admin = False
         self.crew = crew
-
-add_user('treater_motley', "motley",  'password')
