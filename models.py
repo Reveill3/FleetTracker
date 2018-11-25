@@ -42,6 +42,7 @@ def create_list(crew, equipment_type):
     equipment_list = []
 
     for unit in equipment_filter:
+        print(unit['fields']['UnitNumber'])
         if len(unit['fields']['Maintenance']) < 10:
             maint_log_list = unit['fields']['Maintenance']
         else:

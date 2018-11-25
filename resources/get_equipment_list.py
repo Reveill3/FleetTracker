@@ -40,10 +40,7 @@ class GetEquipmentList(Resource):
                 })
             print(maint_logs)
             for maint_log in maint_logs:
-                try:
-                    log_data = models.maintenance.get(maint_log)
-                except:
-                    pass
+                log_data = models.maintenance.get(maint_log)
                 if log_data['fields']['Hole'] == '1' and log_data['fields']['MaintenanceType'] == 'valves & seats':
                     hole_1_hours.append(log_data['fields']['pump_hours'])
                 if log_data['fields']['Hole'] == '2' and log_data['fields']['MaintenanceType'] == 'valves & seats':
