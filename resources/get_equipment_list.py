@@ -38,7 +38,6 @@ class GetEquipmentList(Resource):
                     'details': note_data['fields']['Details'],
                     'treater': treater
                 })
-            print(maint_logs)
             for maint_log in maint_logs:
                 log_data = models.maintenance.get(maint_log)
                 if log_data['fields']['Hole'] == '1' and log_data['fields']['MaintenanceType'] == 'valves & seats':
