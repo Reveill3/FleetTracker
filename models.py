@@ -40,9 +40,14 @@ def create_list(crew, equipment_type):
     equipment_filter = list(filter(lambda e: e['fields']['Type'] == equipment_type, color_filter))
 
     equipment_list = []
+    if len(unit['fields']['Maintenance']) < 10:
+        maint_log_list = unit['fields']['Maintenance']
+    else:
+        maint_log_list = unit['fields']['Maintenance'][-10]
+        
     for unit in equipment_filter:
         equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['Standby'],
-                               unit['fields']['Station'], unit['fields']['Maintenance'][-10], unit['fields']['Movement'], unit['fields']['pump_hours'], unit['fields']['Notes']))
+                               unit['fields']['Station'], maint_log_list, unit['fields']['Movement'], unit['fields']['pump_hours'], unit['fields']['Notes']))
     return equipment_list
 
 
