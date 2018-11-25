@@ -62,12 +62,17 @@ class GetEquipmentList(Resource):
             for move_log in move_logs:
                 move_messages.append([models.movement.get(move_log)['fields']['message']])
 
+            if len(maint_messages) < 3:
+                client_messages = maint_messages
+            else:
+                client_messages = maint_messages[-3]
+
 
             jsondict = {
                 'unitnumber': equipment[0],
                 'standby': equipment[1] == 'True',
                 'station': equipment[2],
-                'maintenance': maint_messages[-3],
+                'maintenance': client_messages,
                 'movement': move_messages,
                 'pump_hours': pump_hours,
                 'hole_1_life': hole_1_life,
