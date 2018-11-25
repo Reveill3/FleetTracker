@@ -42,10 +42,10 @@ def create_list(crew, equipment_type):
     equipment_list = []
     
     for unit in equipment_filter:
-            if len(unit['fields']['Maintenance']) < 10:
-                maint_log_list = unit['fields']['Maintenance']
-            else:
-                maint_log_list = unit['fields']['Maintenance'][-10]
+        if len(unit['fields']['Maintenance']) < 10:
+            maint_log_list = unit['fields']['Maintenance']
+        else:
+            maint_log_list = unit['fields']['Maintenance'][-10]
         equipment_list.append((unit['fields']['UnitNumber'], unit['fields']['Standby'],
                                unit['fields']['Station'], maint_log_list, unit['fields']['Movement'], unit['fields']['pump_hours'], unit['fields']['Notes']))
     return equipment_list
