@@ -133,42 +133,26 @@ def login():
     else:
         return jsonify(authenticated = False)
 
-@app.route('/search', methods=["GET", "POST"])
-def search():
-    """Action for clicking search button in top right. Looks for crew of a piece of equipment and flashes to page. """
-    search_form = forms.SearchForm()
-    if current_user.is_admin:
-        response = make_response(redirect(url_for('admin')))
-    else:
-        response = make_response(redirect(url_for('main')))
-    if search_form.validate_on_submit():
-        try:
-            query = models.equipment.search('UnitNumber', search_form.search.data)
-            flash('{} is on {} crew'.format(search_form.search.data, models.crews.get(query[0]['fields']['Crew'][0])['fields']['Name']))
-        except:
-            flash('{} is not in the system. If this is a mistake please inform admin.'.format(
-                search_form.search.data))
-        return response
-    else:
-        return response
-
+@app.route('/equipment')
+def equipment():
+    return redirect(url_for('home'))
 
 @app.route('/logout', methods=['POST'])
 def logout():
     logout_user()
     return jsonify(loggedOut = True)
 
-if __name__ == '__main__':
-# # # #     # models.initialize()
-# # # #     # models.initialize_csv()
-# # # #     # try:
-# # # #     #     models.User.create_user(
-# # # #     #         username='alester',
-# # # #     #         email='austin.lester@ftsi.com',
-# # # #     #         password='password',
-# # # #     #         admin=True,
-# # # #     #         crew='red'
-# # # #     #     )
-# # # #     # except ValueError:
-# # # #     #     pass
-    app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
+# if __name__ == '__main__':
+# # # # #     # models.initialize()
+# # # # #     # models.initialize_csv()
+# # # # #     # try:
+# # # # #     #     models.User.create_user(
+# # # # #     #         username='alester',
+# # # # #     #         email='austin.lester@ftsi.com',
+# # # # #     #         password='password',
+# # # # #     #         admin=True,
+# # # # #     #         crew='red'
+# # # # #     #     )
+# # # # #     # except ValueError:
+# # # # #     #     pass
+#     app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
