@@ -65,7 +65,7 @@ class GetEquipmentList(Resource):
             if len(maint_messages) < 3:
                 client_messages = maint_messages
             else:
-                client_messages = maint_messages[-3]
+                client_messages = maint_messages[-3:]
 
 
             jsondict = {
