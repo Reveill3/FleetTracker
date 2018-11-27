@@ -20,6 +20,8 @@ crews = Airtable(base_key='appUv95IdpXpBkJ96',
                     table_name='Crews', api_key='keyVE2OTPcmyTURGm')
 notes = Airtable(base_key='appUv95IdpXpBkJ96',
                     table_name='Notes', api_key='keyVE2OTPcmyTURGm')
+logins = Airtable(base_key='appUv95IdpXpBkJ96',
+                    table_name='Logins', api_key='keyVE2OTPcmyTURGm')
 
 
 def add_user(username, crew, password, is_admin=False):

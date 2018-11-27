@@ -120,9 +120,9 @@ def home():
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     parsed_request_data = request.get_json()
-    print(parsed_request_data)
     try:
         user_data = search_field('UserName', parsed_request_data[0]['username'], models.users)
+        models.logins.insert({"Crew": user_data['Crew']}, typecast=True)
         user = models.User(user_data['id'], user_data['UserName'],
                            str.encode(user_data['Password']), user_data['Crew'])
     except IndexError:
