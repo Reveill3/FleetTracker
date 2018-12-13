@@ -60,3 +60,6 @@ class User(UserMixin):
         self.password = password
         self.is_admin = False
         self.crew = crew
+
+if __name__ ==  "__main__":
+    add_user("treater_fleetone", "fleet_one", 'password', is_admin=False)
