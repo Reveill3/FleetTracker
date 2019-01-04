@@ -142,17 +142,17 @@ def logout():
     logout_user()
     return jsonify(loggedOut = True)
 
-# if __name__ == '__main__':
-# # # # #     # models.initialize()
-# # # # #     # models.initialize_csv()
-# # # # #     # try:
-# # # # #     #     models.User.create_user(
-# # # # #     #         username='alester',
-# # # # #     #         email='austin.lester@ftsi.com',
-# # # # #     #         password='password',
-# # # # #     #         admin=True,
-# # # # #     #         crew='red'
-# # # # #     #     )
-# # # # #     # except ValueError:
-# # # # #     #     pass
-#     app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
+if __name__ == '__main__':
+    # models.initialize()
+    # models.initialize_csv()
+    # try:
+    #     models.User.create_user(
+    #         username='alester',
+    #         email='austin.lester@ftsi.com',
+    #         password='password',
+    #         admin=True,
+    #         crew='red'
+    #     )
+    # except ValueError:
+    #     pass
+    app.run(threaded=THREADED, debug=DEBUG, host=HOST, port=PORT)
